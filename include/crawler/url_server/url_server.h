@@ -7,5 +7,9 @@ typedef struct URLStruct{
     struct URLStruct *prev;
 } URLStruct;
 
+typedef struct URLQueue{
+    URLStruct *urlstruct;
+    size_t length;
+} URLQueue;
 
 #endif
