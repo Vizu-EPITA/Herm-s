@@ -8,8 +8,8 @@ typedef struct URLStruct{
 } URLStruct;
 
 typedef struct URLQueue{
-    URLStruct *urlstruct;
-    size_t length;
+    URLStruct *first;
+    size_t size;
 } URLQueue;
 
 #endif
