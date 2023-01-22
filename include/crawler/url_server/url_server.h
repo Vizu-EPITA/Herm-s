@@ -2,7 +2,7 @@
 #define URL_SERVER_H
 
 typedef struct URLStruct{
-    char *url;
+    char url[256];
     struct URLStruct *next;
     struct URLStruct *prev;
 } URLStruct;
