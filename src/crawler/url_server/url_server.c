@@ -2,7 +2,7 @@
 #include <string.h>
 #include <err.h>
 
-URLQueue *InitQueue()
+URLQueue *InitURLQueue()
 {
     URLQueue *q = malloc(sizeof(URLQueue));
     if(q == NULL)
@@ -39,4 +39,35 @@ void AddURL(char *str, URLQueue *queue)
         queue->first = urlStruct; 
     }
     queue->size++;
+}
+
+URLStruct *PopURL(URLQueue *queue)
+{
+    if(queue->size == 0)
+    {
+        return NULL;
+    }
+    else if(queue->size > 1)
+    {
+        URLQueue *tmp = queue->first->prev;
+        queue->first->prev->prev->next = queue->first;
+        queue->first->prev = queue->first->prev->prev;
+    }
+    else
+    {
+        URLQueue *tmp = queue->first;
+        queue->first = NULL;
+    }
+    queue->size--;
+    return tmp;
+}
+
+void FreeURLQueue(URLQueue *queue)
+{
+    URLStruct *tmp1 = first;
+    URLStruct *tmp2 = first->next;
+
+    while(tmp1 != queue->first)
+    {
+    }
 }
