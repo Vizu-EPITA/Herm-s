@@ -9,4 +9,6 @@ typedef struct MemoryStruct{
     size_t size;
 } MemoryStruct;
 
+MemoryStruct* download(char *url);
+
 #endif

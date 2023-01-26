@@ -1,4 +1,4 @@
-#include "./../../../include/crawler/crawler/crawler.h"
+#include "./../../include/crawler/crawler.h"
 #include <err.h>
 #include <stdlib.h>
 #include <curl/curl.h>
@@ -27,20 +27,15 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
 }
 
 
-int main(int argc, char *argv[])
+MemoryStruct *download(char *url)
 {
-    if(argc != 2)
-    {
-        errx(EXIT_FAILURE, "usage: argv[0] link\n");
-    }
-
     CURL *curl_handle;
     CURLcode res;
 
     MemoryStruct *mem = malloc(sizeof(MemoryStruct));
     if(mem == NULL)
     {
-        errx(EXIT_FAILURE, "Memory allocation error\n");
+        errx(EXIT_FAILURE, "Out of memory\n");
     }
 
     mem->memory = malloc(1);    // Will be grown as needed by the realloc
@@ -52,7 +47,7 @@ int main(int argc, char *argv[])
     curl_handle = curl_easy_init();
 
     // Set URL to get here
-    curl_easy_setopt(curl_handle, CURLOPT_URL, argv[1]);
+    curl_easy_setopt(curl_handle, CURLOPT_URL, url);
 
     /*
     // Switch on full protocol/debug output while testing
@@ -81,20 +76,15 @@ int main(int argc, char *argv[])
         fprintf(stderr, "curl_easy_perform() failed: %s\n",
             curl_easy_strerror(res));
     }
-    else
-    {
-        printf("%lu bytes retrieved\n", (unsigned long)mem->size);
-        printf("%s", mem->memory);
-    }
 
     // Free MemoryStruct
-    free(mem->memory);
-    free(mem);
+//    free(mem->memory);
+//    free(mem);
 
     // Cleanup curl stuff
     curl_easy_cleanup(curl_handle);
 
     curl_global_cleanup();
 
-    return 0;
+    return mem;
 }

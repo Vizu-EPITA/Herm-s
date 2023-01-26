@@ -1,8 +1,10 @@
-#include <./../../../include/crawler/url_server/url_server.h>
+#include "../../include/crawler/url_server.h"
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <err.h>
 
-URLQueue *InitURLQueue()
+URLQueue *init_url_queue()
 {
     URLQueue *q = malloc(sizeof(URLQueue));
     if(q == NULL)
@@ -11,12 +13,12 @@ URLQueue *InitURLQueue()
     }
 
     q->size = 0;
-    q->first = 0;
+    q->first = NULL;
 
     return q;
 }
 
-void AddURL(char *str, URLQueue *queue)
+void add_url(URLQueue *queue, char *url)
 {
     URLStruct *urlStruct = malloc(sizeof(URLStruct));
     if(urlStruct == NULL)
@@ -24,50 +26,71 @@ void AddURL(char *str, URLQueue *queue)
         errx(EXIT_FAILURE, "Out of memory\n");
     }  
 
-    strcpy(urlStruct->url, str);
+    char *urlPtr = malloc(sizeof(char) * strlen(url));
+    if(urlPtr == NULL)
+    {
+        errx(EXIT_FAILURE, "Out of memory\n");
+    }
+
+    strcpy(urlPtr, url);
+    urlStruct->url = urlPtr;
+
     if(queue->size == 0)
     {
         urlStruct->prev = urlStruct;
         urlStruct->next = urlStruct;
-        urlStruvt->first = urlStruct;
+        queue->first = urlStruct;
     }
     else
     {
         urlStruct->prev = queue->first->prev;
-        urlStruct->next = queue->first->next;
+        urlStruct->next = queue->first;
+        queue->first->prev->next = urlStruct;
         queue->first->prev = urlStruct;
         queue->first = urlStruct; 
     }
     queue->size++;
 }
 
-URLStruct *PopURL(URLQueue *queue)
+char *pop_url(URLQueue *queue)
 {
+    URLStruct *tmp;
+
     if(queue->size == 0)
     {
         return NULL;
     }
-    else if(queue->size > 1)
+    else if(queue->size == 1)
     {
-        URLQueue *tmp = queue->first->prev;
-        queue->first->prev->prev->next = queue->first;
-        queue->first->prev = queue->first->prev->prev;
+        tmp = queue->first;
+        queue->first = NULL;
     }
     else
     {
-        URLQueue *tmp = queue->first;
-        queue->first = NULL;
+        tmp = queue->first->prev;
+        queue->first->prev->prev->next = queue->first;
+        queue->first->prev = queue->first->prev->prev;
     }
+
     queue->size--;
-    return tmp;
+    char *url = tmp->url;
+
+    free(tmp);
+
+    return url;
 }
 
-void FreeURLQueue(URLQueue *queue)
+void free_url_queue(URLQueue *queue)
 {
-    URLStruct *tmp1 = first;
-    URLStruct *tmp2 = first->next;
+    URLStruct *tmp1 = queue->first->next;
+    URLStruct *tmp2 = tmp1->next;
 
     while(tmp1 != queue->first)
     {
+        free(tmp1);
+        tmp1 = tmp2;
+        tmp2 = tmp2->next;
     }
+    free(queue->first);
+    free(queue);
 }
