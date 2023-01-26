@@ -82,15 +82,17 @@ char *pop_url(URLQueue *queue)
 
 void free_url_queue(URLQueue *queue)
 {
-    URLStruct *tmp1 = queue->first->next;
-    URLStruct *tmp2 = tmp1->next;
+    URLStruct *tmp = queue->first;
 
-    while(tmp1 != queue->first)
+    for(size_t i = 0; i < queue->size; i++)
     {
-        free(tmp1);
-        tmp1 = tmp2;
-        tmp2 = tmp2->next;
+       tmp = tmp->next;
+
+       free(queue->first->url);
+       free(queue->first);
+
+       queue->first = tmp;
     }
-    free(queue->first);
+
     free(queue);
 }
