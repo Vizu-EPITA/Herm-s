@@ -7,7 +7,6 @@
 typedef struct URLStruct{
     char *url;
     struct URLStruct *next;
-    struct URLStruct *prev;
 } URLStruct;
 
 typedef struct URLQueue{

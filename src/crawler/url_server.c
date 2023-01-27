@@ -37,18 +37,14 @@ void add_url(URLQueue *queue, char *url)
 
     if(queue->size == 0)
     {
-        urlStruct->prev = urlStruct;
         urlStruct->next = urlStruct;
-        queue->first = urlStruct;
     }
     else
     {
-        urlStruct->prev = queue->first->prev;
-        urlStruct->next = queue->first;
-        queue->first->prev->next = urlStruct;
-        queue->first->prev = urlStruct;
-        queue->first = urlStruct; 
+        urlStruct->next = queue->first->next;
+        queue->first->next = urlStruct; 
     }
+    queue->first = urlStruct;
     queue->size++;
 }
 
@@ -67,9 +63,8 @@ char *pop_url(URLQueue *queue)
     }
     else
     {
-        tmp = queue->first->prev;
-        queue->first->prev->prev->next = queue->first;
-        queue->first->prev = queue->first->prev->prev;
+        tmp = queue->first->next;
+        queue->first->next = tmp->next;
     }
 
     queue->size--;
