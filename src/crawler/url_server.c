@@ -26,7 +26,7 @@ void add_url(URLQueue *queue, char *url)
         errx(EXIT_FAILURE, "Out of memory\n");
     }  
 
-    char *urlPtr = malloc(sizeof(char) * strlen(url));
+    char *urlPtr = calloc(strlen(url) + 1, sizeof(char));
     if(urlPtr == NULL)
     {
         errx(EXIT_FAILURE, "Out of memory\n");
