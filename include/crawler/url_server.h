@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <semaphore.h>
 
 typedef struct URLStruct{
     char *url;
@@ -10,18 +11,19 @@ typedef struct URLStruct{
 } URLStruct;
 
 typedef struct URLQueue{
+    sem_t lock;
+    sem_t size;
     URLStruct *first;
-    size_t size;
 } URLQueue;
 
 
 URLQueue *init_url_queue();
 
-void free_url_queue(URLQueue *queue);
+void free_url_queue(URLQueue *q);
 
-void add_url(URLQueue *queue, char *url);
+void add_url(URLQueue *q, char *url);
 
-char *pop_url(URLQueue *queue);
+char *pop_url(URLQueue *q);
 
 
 #endif

@@ -49,7 +49,7 @@ int main()
     add_url(queue, "https://en.wikipedia.org/wiki/Thermodynamics");
     add_url(queue, "https://en.wikipedia.org/wiki/Steam_engine");
 
-    while(queue->size != 0)
+    while(queue->first != NULL)
     {
         char *url = pop_url(queue);
         MemoryStruct *mem = download(url);

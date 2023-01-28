@@ -6,20 +6,35 @@
 
 URLQueue *init_url_queue()
 {
+    // Allocating the memory for URLQueue struct
     URLQueue *q = malloc(sizeof(URLQueue));
     if(q == NULL)
     {
         errx(EXIT_FAILURE, "Out of memory\n");
     }
 
-    q->size = 0;
+    // Init parameters
+    // Init semaphores
+    if(sem_init(&q->lock, 0, 1) != 0)
+    {
+        errx(EXIT_FAILURE, "Semaphores initialization error\n");
+    }
+
+    if(sem_init(&q->size, 0, 0) != 0)
+    {
+        errx(EXIT_FAILURE, "Semaphores initialization error\n");
+    }
+
     q->first = NULL;
 
     return q;
 }
 
-void add_url(URLQueue *queue, char *url)
+void add_url(URLQueue *q, char *url)
 {
+    // Lock the queue
+    sem_wait(&q->lock);
+
     URLStruct *urlStruct = malloc(sizeof(URLStruct));
     if(urlStruct == NULL)
     {
@@ -35,59 +50,81 @@ void add_url(URLQueue *queue, char *url)
     strcpy(urlPtr, url);
     urlStruct->url = urlPtr;
 
-    if(queue->size == 0)
+    if(q->first == NULL)
     {
         urlStruct->next = urlStruct;
     }
     else
     {
-        urlStruct->next = queue->first->next;
-        queue->first->next = urlStruct; 
+        urlStruct->next = q->first->next;
+        q->first->next = urlStruct; 
     }
-    queue->first = urlStruct;
-    queue->size++;
+    q->first = urlStruct;
+
+    // Unlock the queue
+    sem_post(&q->lock);
+
+    // Incrementing the size
+    sem_post(&q->size);
 }
 
-char *pop_url(URLQueue *queue)
+char *pop_url(URLQueue *q)
 {
+    // Decrementing the size
+    sem_wait(&q->size);
+
+    // Lock the queue
+    sem_wait(&q->lock);
+
     URLStruct *tmp;
 
-    if(queue->size == 0)
+    if(q->first->next == q->first)
     {
-        return NULL;
-    }
-    else if(queue->size == 1)
-    {
-        tmp = queue->first;
-        queue->first = NULL;
+        tmp = q->first;
+        q->first = NULL;
     }
     else
     {
-        tmp = queue->first->next;
-        queue->first->next = tmp->next;
+        tmp = q->first->next;
+        q->first->next = tmp->next;
     }
 
-    queue->size--;
     char *url = tmp->url;
 
     free(tmp);
 
+    // Unlocking the queue
+    sem_post(&q->lock);
+
     return url;
 }
 
-void free_url_queue(URLQueue *queue)
+void free_url_queue(URLQueue *q)
 {
-    URLStruct *tmp = queue->first;
-
-    for(size_t i = 0; i < queue->size; i++)
+    if(q->first != NULL)
     {
-       tmp = tmp->next;
+        URLStruct *first = q->first;
+        URLStruct *tmp1 = q->first->next;
+        URLStruct *tmp2;
 
-       free(queue->first->url);
-       free(queue->first);
-
-       queue->first = tmp;
+        while(tmp1 != first)
+        {
+            tmp2 = tmp1;
+            tmp1 = tmp1->next;
+            free(tmp2);
+        }
+        free(first);
     }
 
-    free(queue);
+    if(sem_destroy(&q->lock) != 0 )
+    {
+        errx(EXIT_FAILURE, "Free semaphores error\n");
+    }
+
+    if(sem_destroy(&q->size) != 0)
+    {
+        errx(EXIT_FAILURE, "Free semaphores error\n");
+    }
+
+    free(q);
 }
