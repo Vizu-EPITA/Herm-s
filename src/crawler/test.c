@@ -1,8 +1,33 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "../../include/crawler/url_server.h"
 #include "../../include/crawler/crawler.h"
 #include "../../include/crawler/store_server.h"
+#include <stdio.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <err.h>
+
+
+const size_t THREAD_COUNT = 30;
+
+
+void* worker(void *arg)
+{
+    URLQueue *queue = arg;
+
+    while(queue->first != NULL)
+    {
+        char *url = pop_url(queue);
+        MemoryStruct *mem = download(url);
+        save(url+30, mem->memory);
+
+        free(url);
+        free(mem->memory);
+        free(mem);
+    }
+
+    pthread_exit(NULL);
+}
 
 int main()
 {
@@ -49,6 +74,15 @@ int main()
     add_url(queue, "https://en.wikipedia.org/wiki/Thermodynamics");
     add_url(queue, "https://en.wikipedia.org/wiki/Steam_engine");
 
+    pthread_t thr[THREAD_COUNT];
+    for(size_t i = 0; i < THREAD_COUNT; i++)
+    {
+        if(pthread_create(&thr[i], NULL, worker, (void *)queue) != 0)
+        {
+            errx(EXIT_FAILURE, "pthread_create()\n");
+        }
+    }
+    /*
     while(queue->first != NULL)
     {
         char *url = pop_url(queue);
@@ -59,7 +93,11 @@ int main()
         free(mem->memory);
         free(mem);
     }
-
+    */
+    for(size_t i = 0; i < THREAD_COUNT; i++)
+    {
+        pthread_join(thr[i], NULL);
+    }
     free_url_queue(queue);
 
     return 0;
