@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <err.h>
 
+const size_t MAX_URL_PER_NODE = 5;
+
 URLQueue *init_url_queue()
 {
     // Allocating the memory for URLQueue struct
@@ -35,11 +37,6 @@ void add_url(URLQueue *q, char *url)
     // Lock the queue
     sem_wait(&q->lock);
 
-    URLStruct *urlStruct = malloc(sizeof(URLStruct));
-    if(urlStruct == NULL)
-    {
-        errx(EXIT_FAILURE, "Out of memory\n");
-    }  
 
     char *urlPtr = calloc(strlen(url) + 1, sizeof(char));
     if(urlPtr == NULL)
@@ -48,27 +45,48 @@ void add_url(URLQueue *q, char *url)
     }
 
     strcpy(urlPtr, url);
-    urlStruct->url = urlPtr;
 
-    if(q->first == NULL)
+    if(q->first == NULL || q->first->count == MAX_URL_PER_NODE)
     {
-        urlStruct->next = urlStruct;
+        URLStruct *urlStruct = malloc(sizeof(URLStruct));
+        if(urlStruct == NULL)
+        {
+            errx(EXIT_FAILURE, "Out of memory\n");
+        }  
+
+        urlStruct->url = malloc(sizeof(char*) * MAX_URL_PER_NODE);
+        if(urlStruct->url == NULL)
+        {
+            errx(EXIT_FAILURE, "Out of memory\n");
+        }
+        urlStruct->count = 1;
+        urlStruct->url[0] = urlPtr;
+
+        if(q->first == NULL)
+        {
+            urlStruct->next = urlStruct;
+        }
+        else
+        {
+            urlStruct->next = q->first->next;
+            q->first->next = urlStruct; 
+        }
+        q->first = urlStruct;
     }
     else
     {
-        urlStruct->next = q->first->next;
-        q->first->next = urlStruct; 
+        q->first->url[q->first->count] = urlPtr;
+        q->first->count++;
     }
-    q->first = urlStruct;
-
     // Unlock the queue
     sem_post(&q->lock);
 
     // Incrementing the size
     sem_post(&q->size);
+
 }
 
-char *pop_url(URLQueue *q)
+URLStruct *pop_url(URLQueue *q)
 {
     // Decrementing the size
     sem_wait(&q->size);
@@ -89,14 +107,24 @@ char *pop_url(URLQueue *q)
         q->first->next = tmp->next;
     }
 
-    char *url = tmp->url;
+    //char *url = tmp->url;
 
-    free(tmp);
+    //free(tmp);
 
     // Unlocking the queue
     sem_post(&q->lock);
 
-    return url;
+    return tmp;
+}
+
+void free_urlstruct(URLStruct *urlStruct)
+{
+    for(size_t i = 0; i < urlStruct->count; i++)
+    {
+        free(urlStruct->url[i]);
+    }
+    free(urlStruct->url);
+    free(urlStruct);
 }
 
 void free_url_queue(URLQueue *q)
@@ -111,7 +139,7 @@ void free_url_queue(URLQueue *q)
         {
             tmp2 = tmp1;
             tmp1 = tmp1->next;
-            free(tmp2);
+            free_urlstruct(tmp2);
         }
         free(first);
     }

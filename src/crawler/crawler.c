@@ -41,7 +41,7 @@ MemoryStruct *download(char *url)
     mem->memory = malloc(1);    // Will be grown as needed by the realloc
     mem->size = 0;              // No data at this point
 
-    curl_global_init(CURL_GLOBAL_ALL);
+//    curl_global_init(CURL_GLOBAL_ALL);
 
     // Init the curl session
     curl_handle = curl_easy_init();
@@ -84,7 +84,7 @@ MemoryStruct *download(char *url)
     // Cleanup curl stuff
     curl_easy_cleanup(curl_handle);
 
-    curl_global_cleanup();
+//    curl_global_cleanup();
 
     return mem;
 }
