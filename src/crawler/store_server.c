@@ -3,6 +3,7 @@
 #include <zlib.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <err.h>
 
 void save(char *filename, char *html)
@@ -21,7 +22,8 @@ void save(char *filename, char *html)
     FILE *fp = fopen(dest, "w");
     if(fp == NULL)
     {
-        errx(EXIT_FAILURE, "failed to open the file\n");
+        printf("opening the file failed: %s\n", strerror(errno));
+        errx(EXIT_FAILURE, "salam");
     }
 
     fputs(html, fp);

@@ -10,7 +10,7 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
     size_t realsize = size * nmemb;
     MemoryStruct *mem = (MemoryStruct *)userp;
 
-    char *ptr = realloc(mem->memory, mem->size + realsize + 1);
+    char *ptr = realloc(mem->buf, mem->size + realsize + 1);
     if(!ptr)
     {
         // Out of memory!
@@ -18,15 +18,42 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
         return 0;
     }
 
-    mem->memory = ptr;
-    memcpy(&(mem->memory[mem->size]), contents, realsize);
+    mem->buf = ptr;
+    memcpy(&(mem->buf[mem->size]), contents, realsize);
     mem->size += realsize;
-    mem->memory[mem->size] = 0;
+    mem->buf[mem->size] = 0;
 
     return realsize;
 }
 
+int is_html(char *ctype)
+{
+    return ctype != NULL && strlen(ctype) > 10 && strstr(ctype, "text/html");
+}
 
+CURL *make_handle(char *url)
+{
+    CURL *handle = curl_easy_init();
+
+    // Important: use HTTP2 over HTTPS
+    curl_easy_setopt(handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS);
+    curl_easy_setopt(handle, CURLOPT_URL, url);
+    
+    // Buffer body
+    MemoryStruct *mem = malloc(sizeof(MemoryStruct));
+    mem->size = 0;
+    mem->buf = malloc(1);
+    curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, mem);
+    curl_easy_setopt(handle, CURLOPT_PRIVATE, mem);
+
+    // For completeness
+    curl_easy_setopt(handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+    curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1L);
+
+    return handle;
+}
+/*
 MemoryStruct *download(char *url)
 {
     CURL *curl_handle;
@@ -38,7 +65,7 @@ MemoryStruct *download(char *url)
         errx(EXIT_FAILURE, "Out of memory\n");
     }
 
-    mem->memory = malloc(1);    // Will be grown as needed by the realloc
+    mem->buf = malloc(1);    // Will be grown as needed by the realloc
     mem->size = 0;              // No data at this point
 
 //    curl_global_init(CURL_GLOBAL_ALL);
@@ -48,14 +75,6 @@ MemoryStruct *download(char *url)
 
     // Set URL to get here
     curl_easy_setopt(curl_handle, CURLOPT_URL, url);
-
-    /*
-    // Switch on full protocol/debug output while testing
-    curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 1L);
-
-    // Disable progress meter, set to 0L to enable it
-    curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 1L);
-    */
 
     // Some servers do not like requests that are made without a user-agent
     // field, so we provide one
@@ -78,7 +97,7 @@ MemoryStruct *download(char *url)
     }
 
     // Free MemoryStruct
-//    free(mem->memory);
+//    free(mem->buf);
 //    free(mem);
 
     // Cleanup curl stuff
@@ -88,3 +107,4 @@ MemoryStruct *download(char *url)
 
     return mem;
 }
+*/

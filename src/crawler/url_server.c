@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <err.h>
 
-const size_t MAX_URL_PER_NODE = 5;
+const size_t MAX_URL_PER_NODE = 50;
 
 URLQueue *init_url_queue()
 {
