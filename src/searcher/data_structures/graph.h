@@ -1,18 +1,31 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-struct graph
+struct Node
 {
-    struct graph_node *head;
-    int order;
+    int ID;
+    struct Node* next;
 };
 
-struct graph_node
+struct Graph
 {
-    void *value;
-    int id;
-    struct list *adj_list;
-    struct list *prev_list;
+    int order;
+    struct Node** adjLists;
+    struct Node** prevLists;
 };
+
+struct Node* newNode(int ID);
+
+struct Graph* createGraph(int order);
+
+void addEdge(struct Graph* graph, int src, int dest);
+
+void freeGraph(struct Graph*);
+
+void printGraph(struct Graph* graph);
+
+
+
+
 
 #endif

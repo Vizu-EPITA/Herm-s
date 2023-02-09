@@ -2,19 +2,73 @@
 #include <stdlib.h>
 #include <err.h>
 #include "graph.h"
-#include "linked_list.h"
 
-struct graph *init_graph(struct graph_node *head)
+struct Node* newNode(int ID)
 {
-    struct graph *graph = malloc(sizeof(struct graph));
-    if (!graph)
-        err(1, "graph.c: init_graph() couldn't malloc the graph");
-    graph->order = 1;
-    graph->head = head;
-    return graph;
+    struct Node* newNode = malloc(sizeof(struct Node));
+    if (newNode == NULL)
+        err(1, "graph.c: something went wrong while creating a node");
+
+    newNode->ID = ID;
+    newNode->next = NULL;
+    return newNode;
 }
 
-void add_node(struct graph *graph, struct graph_node *node)
-    graph->order += 1;
+struct Graph* createGraph(int order)
+{
+    struct Graph* graph = malloc(sizeof(struct Graph));
+    if (graph == NULL)
+        err(1, "graph.c: something went wrong while creating the graph");
+
+    graph->order = order;
+
+    graph->adjLists = malloc(order * sizeof(struct node*));
+    if (graph->adjLists == NULL)
+        err(1, "graph.c: something went wrong while creating the adjLists");
+
+    graph->prevLists = malloc(order * sizeof(struct node*));
+    if (graph->prevLists == NULL)
+        err(1, "graph.c: something went wrong while creating the prevLists");
+
+
+    for (int i = 0; i < order; i++)
+    {
+        graph->adjLists[i] = NULL;
+        graph->prevLists[i] = NULL;
+    }
+
+  return graph;
+}
+
+// HAS TO MANAGE THE PREVLIST
+void addEdge(struct Graph* graph, int src, int dest)
+{
+    struct Node* tempNode = newNode(dest);
+    tempNode->next = graph->adjLists[src];
+    graph->adjLists[src] = tempNode;
+
+}
+
+void freeGraph(struct Graph*)
+{
+
+}
+
+
+void printGraph(struct Graph* graph)
+{
+    printf("The graph has %i vertices. Here they are with their neighbours\n", graph->order);
+    for (int iD = 0; iD < graph->order; iD++)
+    {
+        struct Node* temp = graph->adjLists[iD];
+        printf("\n  (%d): ", iD);
+        while (temp)
+        {
+            printf(" %d |", temp->ID);
+            temp = temp->next;
+        }
+    }
+    printf("\n");
+}
 
 
