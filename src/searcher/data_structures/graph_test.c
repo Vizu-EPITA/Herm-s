@@ -36,6 +36,15 @@ int main()
 
     printGraph(graph);
 
+    addNode(graph);
+
+    printf("The node (%i) has been added, and been linked to 0 and 1, and 2 to him\n", graph->order);
+    int nodenb = graph->order-1;
+    addEdge(graph, graph->nodes[nodenb], graph->nodes[0]);
+    addEdge(graph, graph->nodes[nodenb], graph->nodes[1]);
+    addEdge(graph, graph->nodes[2], graph->nodes[nodenb]);
+
+    printGraph(graph);
     freeGraph(graph);
 
     return 0;

@@ -24,6 +24,8 @@ struct Node* newNode(int ID);
 
 struct Graph* graphInit(int order);
 
+void addNode(struct Graph* graph);
+
 void addEdge(struct Graph* graph, struct Node* src, struct Node* dest);
 
 void freeGraph(struct Graph*);
