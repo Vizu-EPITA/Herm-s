@@ -76,6 +76,13 @@ void addEdge(struct Graph* graph, struct Node* src, struct Node* dest)
 {
     if(src->ID >= graph->order || dest->ID >= graph->order)
         err(1, "graph.c: trying to add an edge with a node not in the graph");
+    struct Node* test;
+    for (int i = 0; i < src->nbAdj; i++)
+    {
+        test = src->adjList[i];
+        if (test == dest)
+            return;
+    }
     if (src->nbAdj == src->adjListSize)
         src->adjList = realloc(src->adjList, (sizeof(struct Node*) * src->adjListSize * 2));
     if (src->adjList == NULL)
@@ -110,8 +117,8 @@ void printGraph(struct Graph* graph)
         printf("\n  (%d): ", iD);
         for (int i = 0; i < temp->nbAdj; i++)
         {
-            printf(" %d |", temp2->ID);
             temp2 = temp->adjList[i];
+            printf(" %d |", temp2->ID);
         }
     }
     printf("\n");
