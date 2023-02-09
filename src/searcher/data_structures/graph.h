@@ -7,6 +7,10 @@ struct Node
     struct Node** adjList;
     int nbAdj;
     int adjListSize;
+    struct Node** prevList;
+    int nbPrev;
+    int prevListSize;
+
 };
 
 struct Graph

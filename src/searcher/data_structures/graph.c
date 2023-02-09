@@ -16,9 +16,14 @@ struct Node* newNode(int ID)
     newNode->adjList = malloc(sizeof(struct Node) * 5);
     if (newNode->adjList == NULL)
         err(1, "graph.c: something went wrong while creating a node");
+    newNode->prevList = malloc(sizeof(struct Node) * 5);
+    if (newNode->prevList == NULL)
+        err(1, "graph.c: something went wrong while creating a node");
 
     newNode->nbAdj = 0;
     newNode->adjListSize = 5;
+    newNode->nbPrev = 0;
+    newNode->prevListSize = 5;
     return newNode;
 }
 
@@ -59,17 +64,22 @@ void addNode(struct Graph* graph)
         err(1, "graph.c: something went wrong while adding a node");
     addedNode->nbAdj = 0;
     addedNode->adjListSize = 5;
+    addedNode->prevList = malloc(sizeof(struct Node) * 5);
+    if (addedNode->prevList == NULL)
+        err(1, "graph.c: something went wrong while creating a node");
+    addedNode->nbPrev = 0;
+    addedNode->prevListSize = 5;
 
     if(graph->order == graph->sizeNodesList)
     {
         graph->nodes = realloc(graph->nodes, (sizeof(struct Node*) * graph->order * 2));
         if (graph->nodes == NULL)
             err(1, "graph.c: something went wrong while realloc to add a node");
+        graph->sizeNodesList = graph->sizeNodesList * 2;
     }
 
     graph->nodes[graph->order] = addedNode;
     graph->order += 1;
-    graph->sizeNodesList = graph->sizeNodesList * 2;
 }
 
 void addEdge(struct Graph* graph, struct Node* src, struct Node* dest)
@@ -83,14 +93,28 @@ void addEdge(struct Graph* graph, struct Node* src, struct Node* dest)
         if (test == dest)
             return;
     }
-    if (src->nbAdj == src->adjListSize)
-        src->adjList = realloc(src->adjList, (sizeof(struct Node*) * src->adjListSize * 2));
-    if (src->adjList == NULL)
-        err(1, "graph.c: something went wrong while realloc to add an edge");
-    src->adjList[src->nbAdj] = dest;
 
+    if (src->nbAdj == src->adjListSize)
+    {
+        src->adjList = realloc(src->adjList, (sizeof(struct Node*) * src->adjListSize * 2));
+        if (src->adjList == NULL)
+            err(1, "graph.c: something went wrong while realloc to add an edge");
+        src->adjListSize = src->adjListSize * 2;
+    }
+
+    src->adjList[src->nbAdj] = dest;
     src->nbAdj += 1;
-    src->adjListSize = src->adjListSize * 2;
+
+    if (dest->nbPrev == dest->prevListSize)
+    {
+        dest->prevList = realloc(dest->prevList, (sizeof(struct Node*) * dest->prevListSize * 2));
+        if (dest->prevList == NULL)
+            err(1, "graph.c: something went wrong while realloc to add an edge");
+        dest->prevListSize = dest->prevListSize * 2;
+    }
+
+    dest->prevList[dest->nbPrev] = src;
+    dest->nbPrev += 1;
 }
 
  void freeGraph(struct Graph* graph)
@@ -100,6 +124,7 @@ void addEdge(struct Graph* graph, struct Node* src, struct Node* dest)
     {
         destroyer = graph->nodes[i];
         free(destroyer->adjList);
+        free(destroyer->prevList);
         free(destroyer);
     }
     free(graph->nodes);
@@ -109,7 +134,7 @@ void addEdge(struct Graph* graph, struct Node* src, struct Node* dest)
 
 void printGraph(struct Graph* graph)
 {
-    printf("The graph has %i vertices. Here they are with their neighbours\n", graph->order);
+    printf("The graph has %i vertices. Here they are with their adjacents:\n", graph->order);
     for (int iD = 0; iD < graph->order; iD++)
     {
         struct Node* temp = graph->nodes[iD];
@@ -118,6 +143,19 @@ void printGraph(struct Graph* graph)
         for (int i = 0; i < temp->nbAdj; i++)
         {
             temp2 = temp->adjList[i];
+            printf(" %d |", temp2->ID);
+        }
+    }
+
+    printf("And here are the predecessors:\n");
+    for (int iD = 0; iD < graph->order; iD++)
+    {
+        struct Node* temp = graph->nodes[iD];
+        struct Node* temp2;
+        printf("\n  (%d): ", iD);
+        for (int i = 0; i < temp->nbPrev; i++)
+        {
+            temp2 = temp->prevList[i];
             printf(" %d |", temp2->ID);
         }
     }
