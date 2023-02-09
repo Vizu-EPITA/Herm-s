@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-//void parser(the document, the link list);
-//void lexer(document, start, the forward index);
 struct list 
 {
 	struct list *next;
