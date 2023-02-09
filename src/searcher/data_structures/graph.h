@@ -4,14 +4,13 @@
 struct Node
 {
     int ID;
-    struct Node* next;
+    struct Node** adjList;
 };
 
 struct Graph
 {
     int order;
-    struct Node** adjLists;
-    struct Node** prevLists;
+    struct Node** nodes;
 };
 
 struct Node* newNode(int ID);

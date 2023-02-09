@@ -10,7 +10,12 @@ struct Node* newNode(int ID)
         err(1, "graph.c: something went wrong while creating a node");
 
     newNode->ID = ID;
-    newNode->next = NULL;
+    // 5 is used as an arbitrary number. If the value is exceeded, it will
+    // be realloced bit twice itself
+    newNode->adjList = malloc(sizeof(struct Node) * 5);
+    if (newNode->adjList == NULL)
+        err(1, "graph.c: something went wrong while creating a node");
+
     return newNode;
 }
 
@@ -22,19 +27,9 @@ struct Graph* createGraph(int order)
 
     graph->order = order;
 
-    graph->adjLists = malloc(order * sizeof(struct node*));
-    if (graph->adjLists == NULL)
-        err(1, "graph.c: something went wrong while creating the adjLists");
-
-    graph->prevLists = malloc(order * sizeof(struct node*));
-    if (graph->prevLists == NULL)
-        err(1, "graph.c: something went wrong while creating the prevLists");
-
-
     for (int i = 0; i < order; i++)
     {
-        graph->adjLists[i] = NULL;
-        graph->prevLists[i] = NULL;
+        graph->nodes[i] = newNode(i);
     }
 
   return graph;
