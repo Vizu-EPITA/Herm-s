@@ -86,9 +86,17 @@ void addEdge(struct Graph* graph, struct Node* src, struct Node* dest)
     src->adjListSize = src->adjListSize * 2;
 }
 
-void freeGraph(struct Graph*)
+ void freeGraph(struct Graph* graph)
 {
-
+    struct Node* destroyer;
+    for (int i = 0; i < graph->order; i++)
+    {
+        destroyer = graph->nodes[i];
+        free(destroyer->adjList);
+        free(destroyer);
+    }
+    free(graph->nodes);
+    free(graph);
 }
 
 
