@@ -12,6 +12,7 @@ struct graph_node
     void *value;
     int id;
     struct list *adj_list;
+    struct list *prev_list;
 };
 
 #endif

@@ -13,3 +13,8 @@ struct graph *init_graph(struct graph_node *head)
     graph->head = head;
     return graph;
 }
+
+void add_node(struct graph *graph, struct graph_node *node)
+    graph->order += 1;
+
+
