@@ -10,7 +10,7 @@ struct Node
     struct Node** prevList;
     int nbPrev;
     int prevListSize;
-
+    double pageRank;
 };
 
 struct Graph
