@@ -46,6 +46,7 @@ void printRank(struct Graph* graph)
 
 int main()
 {
+    printf("Let's test a first graph: \n");
     struct Graph* graph = graphInit(5);
     addEdge(graph, graph->nodes[0], graph->nodes[3]);
     addEdge(graph, graph->nodes[1], graph->nodes[3]);
@@ -55,20 +56,51 @@ int main()
     printGraph(graph);
 
     initRank(graph);
-    printf("\n\n");
 
-    rank(graph, 1);
-    printRank(graph);
-    printf("\n\n");
-
-    rank(graph, 5);
-    printRank(graph);
-    printf("\n\n");
-
+    printf("\n");
     rank(graph, 50);
     printRank(graph);
 
     freeGraph(graph);
 
+    printf("\n\n--------------------------------\n\n");
+    printf("Let's test a second one: \n");
+
+    struct Graph* graph2 = graphInit(15);
+    addEdge(graph2, graph2->nodes[0], graph2->nodes[3]);
+    addEdge(graph2, graph2->nodes[0], graph2->nodes[6]);
+    addEdge(graph2, graph2->nodes[0], graph2->nodes[8]);
+    addEdge(graph2, graph2->nodes[2], graph2->nodes[3]);
+    addEdge(graph2, graph2->nodes[3], graph2->nodes[1]);
+    addEdge(graph2, graph2->nodes[3], graph2->nodes[8]);
+    addEdge(graph2, graph2->nodes[4], graph2->nodes[12]);
+    addEdge(graph2, graph2->nodes[5], graph2->nodes[0]);
+    addEdge(graph2, graph2->nodes[5], graph2->nodes[3]);
+    addEdge(graph2, graph2->nodes[6], graph2->nodes[12]);
+    addEdge(graph2, graph2->nodes[8], graph2->nodes[7]);
+    addEdge(graph2, graph2->nodes[8], graph2->nodes[9]);
+    addEdge(graph2, graph2->nodes[9], graph2->nodes[11]);
+    addEdge(graph2, graph2->nodes[10], graph2->nodes[3]);
+    addEdge(graph2, graph2->nodes[10], graph2->nodes[11]);
+    addEdge(graph2, graph2->nodes[11], graph2->nodes[14]);
+    addEdge(graph2, graph2->nodes[12], graph2->nodes[1]);
+    addEdge(graph2, graph2->nodes[12], graph2->nodes[3]);
+    addEdge(graph2, graph2->nodes[12], graph2->nodes[5]);
+    addEdge(graph2, graph2->nodes[13], graph2->nodes[3]);
+    addEdge(graph2, graph2->nodes[13], graph2->nodes[4]);
+    addEdge(graph2, graph2->nodes[13], graph2->nodes[8]);
+    addEdge(graph2, graph2->nodes[13], graph2->nodes[9]);
+    addEdge(graph2, graph2->nodes[13], graph2->nodes[14]);
+    addEdge(graph2, graph2->nodes[14], graph2->nodes[3]);
+
+    printGraph(graph2);
+
+    initRank(graph2);
+
+    printf("\n");
+    rank(graph2, 50);
+    printRank(graph2);
+
+    freeGraph(graph2);
     return 0;
 }

@@ -130,7 +130,7 @@ void printGraph(struct Graph* graph)
         }
     }
 
-    printf("\nAnd here are the predecessors:\n");
+    printf("\n\nAnd here are the predecessors:\n");
     for (int iD = 0; iD < graph->order; iD++)
     {
         struct Node* temp = graph->nodes[iD];
