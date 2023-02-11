@@ -2,6 +2,7 @@
 #include "../../include/crawler/crawler.h"
 #include "../../include/crawler/store_server.h"
 #include <stdio.h>
+#include <string.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -39,11 +40,16 @@ void* worker(void *arg)
 }
 */
 
-int main()
+int main(int argc, char *argv[])
 {
+    if(argc != 2)
+    {
+        errx(EXIT_FAILURE, "wrong usage");
+    }
+    size_t number = strtoul(argv[1], NULL, 10);
     URLQueue *queue = init_url_queue();
 
-    for(size_t i = 0; i < 100; i++)
+    for(size_t i = 0; i < number/40; i++)
     {
         add_url(queue, "https://en.wikipedia.org/wiki/Main_Page");
         add_url(queue, "https://en.wikipedia.org/wiki/Mathematics");
@@ -104,7 +110,6 @@ int main()
     }
     free_urlstruct(urlStruct);
 
-    //char saveName[10];
     int msgs_left;
     int pending = 0;
     int complete = 0;
@@ -132,7 +137,12 @@ int main()
                     curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &res_status);
                     if(res_status == 200)
                     {
-                        save(url+30, mem->buf);
+                        // Save
+                        char *filename = calloc(strlen(url+30) + 7, sizeof(char));
+                        sprintf(filename, "%s_%05d", url+30, complete);
+                        save(filename, mem->buf);
+                        free(filename);
+
                         char *ctype;
                         curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &ctype);
                         printf("[%d] HTTP 200 (%s): %s\n", complete, ctype, url);
@@ -162,8 +172,6 @@ int main()
                 }
                 curl_multi_remove_handle(multi_handle, handle);
                 curl_easy_cleanup(handle);
-                //sprintf(saveName, "%d", complete);
-                //save(saveName, mem->buf);
                 free(mem->buf);
                 free(mem);
                 complete++;

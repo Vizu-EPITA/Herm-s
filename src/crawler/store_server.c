@@ -26,8 +26,24 @@ void save(char *filename, char *html)
         errx(EXIT_FAILURE, "salam");
     }
 
+    // Compress
+    /*
+    unsigned long compressedLength = compressBound(strlen(html));
+    char *compressed = calloc(compressedLength, sizeof(char));
+    if(compressed == NULL)
+    {
+        errx(EXIT_FAILURE, "Out of memory\n");
+    }
+    if(compress2((unsigned char *)compressed, &compressedLength,
+        (unsigned char *)html, strlen(html), 3) != Z_OK)
+    {
+        errx(EXIT_FAILURE, "compress failed\n");
+    }
+    */
+
     fputs(html, fp);
 
+//    free(compressed);
     free(dest);
     fclose(fp);
 }

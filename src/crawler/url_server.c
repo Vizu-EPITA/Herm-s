@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <err.h>
 
-const size_t MAX_URL_PER_NODE = 50;
+const size_t MAX_URL_PER_NODE = 5;
 
 URLQueue *init_url_queue()
 {
@@ -72,17 +72,21 @@ void add_url(URLQueue *q, char *url)
             q->first->next = urlStruct; 
         }
         q->first = urlStruct;
+        
+        // Unlock the queue
+        sem_post(&q->lock);
+
+        // Incrementing the size
+        sem_post(&q->size);
     }
     else
     {
         q->first->url[q->first->count] = urlPtr;
         q->first->count++;
-    }
-    // Unlock the queue
-    sem_post(&q->lock);
 
-    // Incrementing the size
-    sem_post(&q->size);
+        // Unlock the queue
+        sem_post(&q->lock);
+        }
 
 }
 
