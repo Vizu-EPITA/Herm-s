@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 char htag[9] = "a href=\"";
 
+//linked list for the forward index
+//info points to word information
 struct list 
 {
 	struct list *next;
@@ -12,12 +13,16 @@ struct list
 	void* info;
 };
 
+//hit list, stores hit postions
 struct hit
 {
 	int position;
 	struct hit *next;
 };
 
+//type : fancy or simple hit
+//nhits : number of occurences
+//hit : hit list with hit positions
 struct info 
 {
 	char type;
@@ -56,6 +61,8 @@ void add_top(struct list *list, struct list *element)
 	list->next = element;
 }
 
+//checks after the offset if tag is a prefix
+//length of the tag is given
 int check_tag(FILE *doc, char *tag, size_t len)
 {
 	int i = 1;
@@ -71,7 +78,8 @@ int check_tag(FILE *doc, char *tag, size_t len)
 	return (i == len);
 }
 
-
+//retrieves simple tag keywords and stores them in tag
+//c represents the first keyword character already encountered after <
 void get_tag(FILE *doc, char c, char **tag)
 {
 	(*tag)[0] = c;
@@ -96,14 +104,11 @@ void get_tag(FILE *doc, char c, char **tag)
 	}
 }
 
-
+//add the link conrained between the a tags to links
 void add_link(struct list *links, FILE * doc)
 {
 	char c;
-	int pos;
-
-	pos = 0;
-
+	int pos = 0;
 	char *link = malloc(sizeof(char)*256);
 	
 	while((c = fgetc(doc)) != EOF && pos < 256)
@@ -111,11 +116,13 @@ void add_link(struct list *links, FILE * doc)
 		if(c == '\"')
 		{
 			c = fgetc(doc);
+			//it is the end of the link or the a tag
 			if (c == '>' || c == ' ')
 			{
 				link[pos] = '\0';
 				break;
 			}
+			//it is part of the link
 			else
 			{
 				link[pos] = '\"';
@@ -126,6 +133,7 @@ void add_link(struct list *links, FILE * doc)
 	}
 	if(pos != 256)
 	{
+		//in case there's still space in link
 		link = realloc(link, pos);
 		add_top(links, new_element(link));
 	}
@@ -136,26 +144,31 @@ void add_link(struct list *links, FILE * doc)
 		while(c != '>')
 		{
 			c = fgetc(doc);
+			//ATTRIBUTE PROCESSING GOES HERE
 		}
 	}
 	c = fgetc(doc);
+
+	//move the offset to the end of the closing tag
 	while(c != '>')
 	{
 		c = fgetc(doc);
 	}
 }
 
+//skips uninteresting tags, stops at >
 void skip_tag(FILE *doc, char *tag, struct list *links)
 {
 	printf("\n|skipping, tag = %s| --------------------\n", tag);
 	char c;
 
-	//add the words in between
+	//skip or process tag content
 	while((c = fgetc(doc)) != EOF)
 	{
 check_again:
 		if(c == '<')
 		{
+			//check for closing tag
 			if ((c = fgetc(doc)) == '/')
 			{
 				if((c = fgetc(doc)) == tag[0])
@@ -164,7 +177,7 @@ check_again:
 						break;
 				}
 			}
-			
+			//check for link
 			if(c == 'a')
 			{
 				if(check_tag(doc, htag, 8))
@@ -172,6 +185,7 @@ check_again:
 					add_link(links, doc);
 					if((c = fgetc(doc)) == EOF)
 						return;
+					//to solve for successive tags
 					if(c == '<')
 						goto check_again;
 				}
@@ -179,26 +193,22 @@ check_again:
 			}
 		}
 		printf("%c",c);
+		//CONTENT PROCESSING GOES HERE
 
 	}
 
+	//skip the last tag character
 	c = fgetc(doc);
-	/*
-	printf("\ninside closing tag");
-	while(c != EOF && c != '>')
-	{
-		c = fgetc(doc);
-		printf("%c", c);
-	}
-	*/
 	printf("\n---------------------------------------\n");
 }
 
+//parses found paragraph and extracts links
 void add_words(struct list *links, FILE *doc)
 {
 	char c = fgetc(doc);
 	printf("\nparagraph========================\n");
 
+	//skip over paragraph opening tag
 	while(c != '>')
 	{
 		c = fgetc(doc);
@@ -222,12 +232,15 @@ void add_words(struct list *links, FILE *doc)
 tag_processing:
 			switch(c = getc(doc))
 			{
+				//extract link from paragraph
+				//LINK KEYWORD EXTACTION GOES HERE
 				case 'a':
 					if(check_tag(doc, htag, 8))
 					{
 						add_link(links, doc);
 						if((c = fgetc(doc)) == EOF)
 							return;
+						//to solve for successive tags
 						if(c == '<')
 							goto tag_processing;
 						break;
@@ -236,16 +249,20 @@ tag_processing:
 					{
 						skip_tag(doc, "a", links);
 					}
+				//end of paragraph
 				case '/':
+					//skip over paragraph closing tag
 					c = fgetc(doc);
 					c = fgetc(doc);
 					printf("\n==================================\n");
 					return;	
+				//skip uninteresting tag
 				default:
 					get_tag(doc, c, &tag);
 					skip_tag(doc, tag, links);
 					if((c = fgetc(doc)) == EOF)
 						return;
+					//to solve for successive tags
 					if(c == '<')
 						goto tag_processing;
 			}
@@ -270,15 +287,19 @@ tag_processing:
 
 	}
 
+	//free
+	if(word != NULL)
+		free(word);
+
 }
 
+//parses the whole file
 struct list *parser(char* file)
 {
 	FILE* doc = fopen(file, "r");
 	char c;
 
 	struct list *links = new_list();
-	struct list *hitlist = new_list();	
 
 	if (doc == NULL)
 	{
@@ -295,12 +316,14 @@ struct list *parser(char* file)
 			c = fgetc(doc);
 			switch(c)
 			{
+				//extract link
 				case 'a':
 					if(check_tag(doc, htag, 8))
 					{
 						add_link(links, doc);
 					}
 					break;
+				//extract paragraph
 				case 'p':
 					add_words(links, doc);
 					if((c = fgetc(doc)) == EOF)
@@ -352,6 +375,9 @@ int main(int argc, char *argv[])
 			res = res->next;
 		}
 	}
+
+	if(res != NULL)
+		free(res);
 
 	return 0;
 }
