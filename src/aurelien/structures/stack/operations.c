@@ -1,6 +1,6 @@
 /*
  * Author: Izoulet Aurélien
- * Purpose: Oriented Graph implementation 
+ * Purpose: Stack implementation 
  * Language: C.
  */
 
