@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
         curl_multi_setopt(multi_handle, CURLMOPT_PIPELINING, CURLPIPE_MULTIPLEX);
     #endif
 
-    /* sets html start page */
+    // sets html start page
     URLStruct *urlStruct = pop_url(queue);
     for(size_t i = 0; i < urlStruct->count; i++)
     {
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
         curl_multi_wait(multi_handle, NULL, 0, 1000, &numfds);
         curl_multi_perform(multi_handle, &still_running);
 
-        /* See how the transfers went */
+        // See how the transfers went
         CURLMsg *m = NULL;
         while((m = curl_multi_info_read(multi_handle, &msgs_left)))
         {
@@ -181,7 +181,8 @@ int main(int argc, char *argv[])
     }
     curl_multi_cleanup(multi_handle);
 
-    /*
+
+	/*
     pthread_t thr[THREAD_COUNT];
     for(size_t i = 0; i < THREAD_COUNT; i++)
     {
@@ -190,29 +191,17 @@ int main(int argc, char *argv[])
             errx(EXIT_FAILURE, "pthread_create()\n");
         }
     }
-    */
-    
-    /*
-    while(queue->first != NULL)
-    {
-        char *url = pop_url(queue);
-        MemoryStruct *mem = download(url);
-        save(url+30, mem->memory);
-
-        free(url);
-        free(mem->memory);
-        free(mem);
-    }
-    */
-
-    /*
     for(size_t i = 0; i < THREAD_COUNT; i++)
     {
         pthread_join(thr[i], NULL);
     }
-    */
+	*/
+
+
+
     curl_global_cleanup();
     free_url_queue(queue);
 
     return 0;
 }
+

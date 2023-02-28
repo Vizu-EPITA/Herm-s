@@ -27,7 +27,6 @@ void save(char *filename, char *html)
     }
 
     // Compress
-    /*
     unsigned long compressedLength = compressBound(strlen(html));
     char *compressed = calloc(compressedLength, sizeof(char));
     if(compressed == NULL)
@@ -39,11 +38,10 @@ void save(char *filename, char *html)
     {
         errx(EXIT_FAILURE, "compress failed\n");
     }
-    */
 
-    fputs(html, fp);
+    fwrite(compressed, compressedLength, 1, fp);
 
-//    free(compressed);
+    free(compressed);
     free(dest);
     fclose(fp);
 }
