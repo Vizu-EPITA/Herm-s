@@ -44,4 +44,6 @@ void decompress_data(struct data *data);
 
 char* sha1_hash(const unsigned char *data, size_t len);
 
+void add_to_server(char* page, size_t page_size, char* url, size_t url_size);
+
 #endif
