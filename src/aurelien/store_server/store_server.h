@@ -12,6 +12,9 @@
 #include <string.h>
 #include <zlib.h>
 #include <openssl/sha.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include "../structures/string/string.h"
 
 /**
 ** @brief          Store server page structure.
@@ -45,5 +48,11 @@ void decompress_data(struct data *data);
 char* sha1_hash(const unsigned char *data, size_t len);
 
 void add_to_server(char* page, size_t page_size, char* url, size_t url_size);
+
+void normalize_html(char* html, size_t *html_size);
+
+void write_page_to_disk(struct webpage *webpage);
+
+unsigned char* get_page_from_disk_with_url(char* url, size_t url_size);
 
 #endif

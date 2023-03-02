@@ -1,9 +1,10 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -std=c11
+CFLAGS = -Wall -Wextra -pedantic -std=c11 -g
 LDFLAGS = -lz -lcrypto
 
 SRCDIR = .
-SRCS = $(wildcard $(SRCDIR)/*.c)
+SRCDIR2 = ../structures/string
+SRCS = $(wildcard $(SRCDIR)/*.c $(SRCDIR2)/*.c)
 OBJS = $(SRCS:.c=.o)
 
 store_server: $(OBJS)
@@ -15,3 +16,4 @@ store_server: $(OBJS)
 .PHONY: clean
 clean:
 	rm -f $(OBJS) store_server
+	rm -r database
