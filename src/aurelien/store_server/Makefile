@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -std=c11 -g
+CFLAGS = -Wall -Wextra -pedantic -std=c11 -g -std=c99 -D_DEFAULT_SOURCE 
 LDFLAGS = -lz -lcrypto
 
 SRCDIR = .

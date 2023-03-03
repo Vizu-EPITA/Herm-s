@@ -53,6 +53,8 @@ void normalize_html(char* html, size_t *html_size);
 
 void write_page_to_disk(struct webpage *webpage);
 
+char *get_first_file_in_path(char *path);
+
 unsigned char* get_page_from_disk_with_url(char* url, size_t url_size);
 
 #endif
