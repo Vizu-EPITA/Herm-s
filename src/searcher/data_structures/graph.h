@@ -4,6 +4,7 @@
 struct Node
 {
     int ID;
+    int docID;
     struct Node** adjList;
     int nbAdj;
     int adjListSize;
@@ -20,11 +21,11 @@ struct Graph
     int sizeNodesList;
 };
 
-struct Node* newNode(int ID);
+struct Node* newNode(int ID, int docId);
 
 struct Graph* graphInit(int order);
 
-void addNode(struct Graph* graph);
+void addNode(struct Graph* graph, int docID);
 
 void addEdge(struct Graph* graph, struct Node* src, struct Node* dest);
 
