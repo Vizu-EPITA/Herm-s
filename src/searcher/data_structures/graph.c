@@ -39,10 +39,10 @@ struct Graph* graphInit(int order)
     graph->nodes = malloc(sizeof(struct Node*) * order);
     if (graph->nodes == NULL)
         errx(1, "graph.c: something went wrong while creating the graph");
-    for (int i = 0; i < order; i++)
-    {
-        graph->nodes[i] = newNode(i, -1);
-    }
+    //for (int i = 0; i < order; i++)
+    //{
+    //    graph->nodes[i] = newNode(i, -1);
+    //}
 
     graph->sizeNodesList = order;
 
