@@ -1,7 +1,12 @@
+#include "hash_table.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <err.h>
+
 
 uint32_t Jenkins_one_at_a_time_hash(const char* key, size_t len)
 {
@@ -19,7 +24,7 @@ uint32_t Jenkins_one_at_a_time_hash(const char* key, size_t len)
 	return hash;
 }
 
-Ht_item* create_item(char* key, uint32_t value)
+Ht_item* create_item(char* key, int32_t value)
 {
 	// Creates a pointer to a new HashTable item.
 	Ht_item* item = (Ht_item*) malloc(sizeof(Ht_item));
@@ -58,7 +63,6 @@ void free_item(Ht_item* item)
 {
 	// Frees an item.
 	free(item->key);
-	free(item->value);
 	free(item);
 }
 
@@ -77,16 +81,17 @@ void free_table(HashTable* table)
 		}
 	}
 	free(table->items);
+	#include <stdio.h>
 	free(table);
 }
 
-void ht_insert(HashTable* table, char* key, uint32_t value)
+void ht_insert(HashTable* table, char* key, int32_t value)
 {
 	// Creates the item.
 	Ht_item* item = create_item(key, value);
 	
 	// Computes the index.
-	uint32_t index = Jenkins_one_at_a_time_hash(key, strlen(key)) % table->size;
+	int32_t index = Jenkins_one_at_a_time_hash(key, strlen(key)) % table->size;
 
 	Ht_item* current_item = table->items[index];
 
@@ -107,7 +112,7 @@ void ht_insert(HashTable* table, char* key, uint32_t value)
 	}
 }
 
-uint32_t ht_search(HashTable* table, char* key)
+int32_t ht_search(HashTable* table, char* key)
 {
 	// Searches for the key in the HashTable.
 	// Returns NULL if it doesn't exist.
@@ -117,12 +122,12 @@ uint32_t ht_search(HashTable* table, char* key)
 	while(item != NULL)
 	{
 		if(strcmp(item->key, key) == 0)
-			return value;
+			return item->value;
 
 		item = item->next;
 	}
 
-	return NULL;
+	return -1;
 }
 
 void print_table(HashTable* table)
@@ -131,11 +136,10 @@ void print_table(HashTable* table)
 	for(uint32_t i = 0; i < table->size; i++)
 	{
 		Ht_item* item = table->items[i];
-		printf("Index:%d |")
+		printf("Index:%u |", i);
 		while(item != NULL)
 		{
-			printf(" Key:%s, Value:%s |",
-			i, table->items[i]->key, table->items[i]->value);
+			printf(" Key:%s, Value:%u |", item->key, item->value);
 			item = item->next;
 		}
 		printf("\n");
