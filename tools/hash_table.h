@@ -15,6 +15,8 @@ typedef struct HashTable
 	uint32_t count;
 } HashTable;
 
+uint32_t Jenkins_one_at_a_time_hash(const char* key, size_t len);
+
 Ht_item* create_item(char* key, uint32_t value);
 
 HashTable* create_table(uint32_t size);

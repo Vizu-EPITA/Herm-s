@@ -3,12 +3,26 @@
 #include <stdlib.h>
 #include <string.h>
 
+uint32_t Jenkins_one_at_a_time_hash(const char* key, size_t len)
+{
+	uint32_t hash;
+	uint32_t i;
+	for(hash = i = 0; i < len; ++i)
+	{
+		hash += key[i];
+		hash += (hash << 10);
+		hash ^= (hash >> 6);
+	}
+	hash += (hash << 3);
+	hash ^= (hash >> 11);
+	hash += (hash << 15);
+	return hash;
+}
 
 Ht_item* create_item(char* key, uint32_t value)
 {
 	// Creates a pointer to a new HashTable item.
 	Ht_item* item = (Ht_item*) malloc(sizeof(Ht_item));
-
 	if(item == NULL)
 		errx(EXIT_FAILURE, "Not enough memory!");
 	
@@ -72,7 +86,7 @@ void ht_insert(HashTable* table, char* key, uint32_t value)
 	Ht_item* item = create_item(key, value);
 	
 	// Computes the index.
-	uint32_t index = hash_function(key);
+	uint32_t index = Jenkins_one_at_a_time_hash(key, strlen(key)) % table->size;
 
 	Ht_item* current_item = table->items[index];
 
@@ -97,7 +111,7 @@ uint32_t ht_search(HashTable* table, char* key)
 {
 	// Searches for the key in the HashTable.
 	// Returns NULL if it doesn't exist.
-	uint32_t index = hash_function(key);
+	uint32_t index = Jenkins_one_at_a_time_hash(key, strlen(key)) % table->size;
 	Ht_item* item =  table->items[index];
 	
 	while(item != NULL)
