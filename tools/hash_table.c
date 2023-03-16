@@ -4,7 +4,7 @@
 #include <string.h>
 
 
-Ht_item* create_item(char* key, char* value)
+Ht_item* create_item(char* key, uint32_t value)
 {
 	// Creates a pointer to a new HashTable item.
 	Ht_item* item = (Ht_item*) malloc(sizeof(Ht_item));
@@ -16,19 +16,14 @@ Ht_item* create_item(char* key, char* value)
 	if(item->key == NULL)
 		errx(EXIT_FAILURE, "Not enough memory!");
 
-	item->value = (char*) malloc(strlen(value) + 1);
-	if(item->value == NULL)
-		errx(EXIT_FAILURE, "Not enough memory!");
-
+	item->value = value;
 	item->next = NULL;
-
 	strcpy(item->key, key);
-	strcpy(item->value, value);
 
 	return item;
 }
 
-HashTable* create_table(size_t size)
+HashTable* create_table(uint32_t size)
 {
 	// Creates a new HashTable.
 	HashTable* table = (HashTable*) malloc(sizeof(HashTable));
@@ -39,7 +34,7 @@ HashTable* create_table(size_t size)
 	table->count = 0;
 	table->items = (Ht_item**) malloc(sizeof(Ht_item*) * size);
 
-	for(size_t i = 0; i < table->size; i++)
+	for(uint32_t i = 0; i < table->size; i++)
 		table->items[i] = NULL;
 
 	return table;
@@ -56,7 +51,7 @@ void free_item(Ht_item* item)
 void free_table(HashTable* table)
 {
 	// Frees the table
-	for(size_t i = 0; i < table->size; i++)
+	for(uint32_t i = 0; i < table->size; i++)
 	{
 		Ht_item* item = table->items[i];
 
@@ -71,13 +66,13 @@ void free_table(HashTable* table)
 	free(table);
 }
 
-void ht_insert(HashTable* table, char* key, char* value)
+void ht_insert(HashTable* table, char* key, uint32_t value)
 {
 	// Creates the item.
 	Ht_item* item = create_item(key, value);
 	
 	// Computes the index.
-	size_t index = hash_function(key);
+	uint32_t index = hash_function(key);
 
 	Ht_item* current_item = table->items[index];
 
@@ -98,11 +93,11 @@ void ht_insert(HashTable* table, char* key, char* value)
 	}
 }
 
-char* ht_search(HashTable* table, char* key)
+uint32_t ht_search(HashTable* table, char* key)
 {
 	// Searches for the key in the HashTable.
 	// Returns NULL if it doesn't exist.
-	size_t index = hash_function(key);
+	uint32_t index = hash_function(key);
 	Ht_item* item =  table->items[index];
 	
 	while(item != NULL)
@@ -119,7 +114,7 @@ char* ht_search(HashTable* table, char* key)
 void print_table(HashTable* table)
 {
 	printf("\nHash Table\n------------------\n");
-	for(size_t i = 0; i < table->size; i++)
+	for(uint32_t i = 0; i < table->size; i++)
 	{
 		Ht_item* item = table->items[i];
 		printf("Index:%d |")
