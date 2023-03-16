@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define
 
 Ht_item* create_item(char* key, char* value)
 {
@@ -61,8 +60,12 @@ void free_table(HashTable* table)
 	{
 		Ht_item* item = table->items[i];
 
-		if(item != NULL)
-			free_item(item);
+		while(item != NULL)
+		{
+			Ht_item* tmp = item;
+			item = item->next;
+			free_item(tmp);
+		}
 	}
 	free(table->items);
 	free(table);
