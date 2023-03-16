@@ -6,13 +6,9 @@
 
 struct Node *findOrCreateNode(struct Graph *graph, int docID)
 {
-    for (int i = 0; i < graph->order; i++)
-    {
-        if (graph->nodes[i]->docID = docID)
-            return graph->nodes[i];
-    }
-    addNode(graph, docID);
-    return graph->nodes[graph->order];
+    while (docID >= graph->order)
+        addNode(graph);
+    return graph->nodes[docID];
 }
 
 int main()

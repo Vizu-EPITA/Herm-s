@@ -4,14 +4,13 @@
 #include "graph.h"
 
 // Initializes a new node and returns it.
-struct Node* newNode(int ID, int docID)
+struct Node* newNode(int ID)
 {
     struct Node* newNode = malloc(sizeof(struct Node));
     if (newNode == NULL)
         errx(1, "graph.c: something went wrong while creating a node");
 
     newNode->ID = ID;
-    newNode->docID = docID;
     // 5 is used as an arbitrary number. If the value is exceeded, it will
     // be realloced bit twice itself
     newNode->adjList = malloc(sizeof(struct Node) * 5);
@@ -39,10 +38,10 @@ struct Graph* graphInit(int order)
     graph->nodes = malloc(sizeof(struct Node*) * order);
     if (graph->nodes == NULL)
         errx(1, "graph.c: something went wrong while creating the graph");
-    //for (int i = 0; i < order; i++)
-    //{
-    //    graph->nodes[i] = newNode(i, -1);
-    //}
+    for (int i = 0; i < order; i++)
+    {
+        graph->nodes[i] = newNode(i);
+    }
 
     graph->sizeNodesList = order;
 
@@ -50,9 +49,9 @@ struct Graph* graphInit(int order)
 }
 
 // Different from newNode(). Creates a new node and adds it into the graph
-void addNode(struct Graph* graph, int docID)
+void addNode(struct Graph* graph)
 {
-    struct Node* addedNode = newNode(graph->order, docID);
+    struct Node* addedNode = newNode(graph->order);
     if(graph->order == graph->sizeNodesList)
     {
         graph->nodes = realloc(graph->nodes, (sizeof(struct Node*) * graph->order * 2));
@@ -123,7 +122,7 @@ void printGraph(struct Graph* graph)
     {
         struct Node* temp = graph->nodes[iD];
         struct Node* temp2;
-        printf("\n  (ID = %d, docID = %i): ", iD, temp->docID);
+        printf("\n  (%d): ", iD);
         for (int i = 0; i < temp->nbAdj; i++)
         {
             temp2 = temp->adjList[i];
@@ -136,7 +135,7 @@ void printGraph(struct Graph* graph)
     {
         struct Node* temp = graph->nodes[iD];
         struct Node* temp2;
-        printf("\n  (ID = %d, docID = %i): ", iD, temp->docID);
+        printf("\n  (%d): ", iD);
         for (int i = 0; i < temp->nbPrev; i++)
         {
             temp2 = temp->prevList[i];
