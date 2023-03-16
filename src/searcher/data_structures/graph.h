@@ -28,6 +28,8 @@ void addNode(struct Graph* graph);
 
 void addEdge(struct Graph* graph, struct Node* src, struct Node* dest);
 
+struct Node *findOrCreateNode(struct Graph *graph, int docID);
+
 void freeGraph(struct Graph*);
 
 void printGraph(struct Graph* graph);

@@ -4,30 +4,13 @@
 #include <stdio.h>
 #include "data_structures/graph.h"
 
-struct Node *findOrCreateNode(struct Graph *graph, int docID)
-{
-    while (docID >= graph->order)
-        addNode(graph);
-    return graph->nodes[docID];
-}
-
 int main()
 {
-    /*
-     * Issue when adding edges, might come from how I initialize the Graph
-     *
-     * Having -1 as docId for the first nodes after the init might fuck it up
-     *
-     * Also, I still need to figure when to save/load the graph and where. I
-     * could use the same format as the links.txt file to save some work. Then
-     * maybe instead of having to save the graph we could just put the
-     * links.txt files together but maybe it wont fucking work
-     *
-     * Dont forget to delete the prints, but not now. They still remain useful
-     */
+    // Has to initialize the graph before starting, call one time only
     struct Graph *graph = graphInit(1);
     int fd;
     int ableToRead;
+    //Simple bool to state if we are readind the from ID (1) or to ID (!= 1)
     int readFrom = 1;
     int fromId = 0;
     int toId = 0;
@@ -39,7 +22,7 @@ int main()
     ableToRead = read(fd, &character, 1);
     while (ableToRead > 0)
     {
-        printf("Char : %c\n", character);
+        // The "from node" has been parsed
         if (character == '|')
         {
             fromNode = findOrCreateNode(graph, fromId);
@@ -47,6 +30,7 @@ int main()
             ableToRead = read(fd, &character, 1);
             continue;
         }
+        // The "to node" has been parsed, proceeds to link them
         if (character == ',')
         {
             toNode = findOrCreateNode(graph, toId);
@@ -56,6 +40,7 @@ int main()
             ableToRead = read(fd, &character, 1);
             continue;
         }
+        // Same as before but resets the IDs since its the end of the line
         if (character == '\n')
         {
             toNode = findOrCreateNode(graph, toId);

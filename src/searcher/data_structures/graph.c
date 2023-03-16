@@ -27,6 +27,7 @@ struct Node* newNode(int ID)
     return newNode;
 }
 
+// Pretty straight forward, initializes the graph.
 struct Graph* graphInit(int order)
 {
     struct Graph* graph = malloc(sizeof(struct Graph));
@@ -38,6 +39,7 @@ struct Graph* graphInit(int order)
     graph->nodes = malloc(sizeof(struct Node*) * order);
     if (graph->nodes == NULL)
         errx(1, "graph.c: something went wrong while creating the graph");
+    // Setting up the nodes
     for (int i = 0; i < order; i++)
     {
         graph->nodes[i] = newNode(i);
@@ -48,10 +50,11 @@ struct Graph* graphInit(int order)
   return graph;
 }
 
-// Different from newNode(). Creates a new node and adds it into the graph
+// Different from newNode(). Creates a new node and adds it into the graph.
 void addNode(struct Graph* graph)
 {
     struct Node* addedNode = newNode(graph->order);
+    // If we want to add a node while the array is full, resize by twice its size
     if(graph->order == graph->sizeNodesList)
     {
         graph->nodes = realloc(graph->nodes, (sizeof(struct Node*) * graph->order * 2));
@@ -64,12 +67,14 @@ void addNode(struct Graph* graph)
     graph->order += 1;
 }
 
+// Again, obviously creates an edge between the two nodes given
 void addEdge(struct Graph* graph, struct Node* src, struct Node* dest)
 {
     if(src->ID >= graph->order || dest->ID >= graph->order)
         errx(1, "graph.c: trying to add an edge with a node not in the graph");
     struct Node* test;
 
+    // Checks if the edge already exists. If so, return
     for (int i = 0; i < src->nbAdj; i++)
     {
         test = src->adjList[i];
@@ -77,6 +82,8 @@ void addEdge(struct Graph* graph, struct Node* src, struct Node* dest)
             return;
     }
 
+    // We now have to update the adjlist and the prevlist of the nodes.
+    // If they are full, resize by twice, as usual
     if (src->nbAdj == src->adjListSize)
     {
         src->adjList = realloc(src->adjList, (sizeof(struct Node*) * src->adjListSize * 2));
@@ -100,7 +107,19 @@ void addEdge(struct Graph* graph, struct Node* src, struct Node* dest)
     dest->nbPrev += 1;
 }
 
- void freeGraph(struct Graph* graph)
+// Return the node which contains the given docID. If it dont exists,
+// creates all the nodes with a docID inferior to his, creates the said node
+// and returns it.
+struct Node *findOrCreateNode(struct Graph *graph, int docID)
+{
+    while (docID >= graph->order)
+        // Create all the missing nodes
+        addNode(graph);
+    return graph->nodes[docID];
+}
+
+// Simple free fct
+void freeGraph(struct Graph* graph)
 {
     struct Node* destroyer;
     for (int i = 0; i < graph->order; i++)
@@ -114,7 +133,7 @@ void addEdge(struct Graph* graph, struct Node* src, struct Node* dest)
     free(graph);
 }
 
-
+// Simple print fct
 void printGraph(struct Graph* graph)
 {
     printf("The graph has %i vertices. Here they are with their adjacents:\n", graph->order);
