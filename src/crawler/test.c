@@ -1,4 +1,5 @@
 #include "../../include/crawler/url_server.h"
+#include "../../tools/hash_table.h"
 #include "../../include/crawler/crawler.h"
 #include "../../include/crawler/store_server.h"
 #include <stdio.h>
@@ -9,36 +10,11 @@
 #include <err.h>
 #include <curl/curl.h>
 
+HashTable *table;
+
 int max_con = 200;
 int max_total = 20000;
 int max_requests = 500;
-
-const size_t THREAD_COUNT = 100;
-
-/*
-void* worker(void *arg)
-{
-    URLQueue *queue = arg;
-    char *url;
-
-    while(queue->first != NULL)
-    {
-        URLStruct *urlStruct = pop_url(queue);
-        for(size_t i = 0; i < urlStruct->count; i++)
-        {
-            url = urlStruct->url[i];
-            //MemoryStruct *mem = download(url);
-            //save(url+30, mem->memory);
-
-            free(mem->buf);
-            free(mem);
-        }
-        free_urlstruct(urlStruct);
-    }
-
-    pthread_exit(NULL);
-}
-*/
 
 int main(int argc, char *argv[])
 {
@@ -48,6 +24,8 @@ int main(int argc, char *argv[])
     }
     size_t number = strtoul(argv[1], NULL, 10);
     URLQueue *queue = init_url_queue();
+	
+	table = create_table(400);
 
     for(size_t i = 0; i < number/40; i++)
     {
@@ -92,6 +70,48 @@ int main(int argc, char *argv[])
         add_url(queue, "https://en.wikipedia.org/wiki/Thermodynamics");
         add_url(queue, "https://en.wikipedia.org/wiki/Steam_engine");
     }
+
+	ht_insert(table,"https://en.wikipedia.org/wiki/Main_Page", 0);
+   	ht_insert(table,"https://en.wikipedia.org/wiki/Mathematics", 1);
+   	ht_insert(table,"https://en.wikipedia.org/wiki/Physics", 2);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Elementary_particle", 3);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Particle_physics", 4);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Fundamental_interaction", 5);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Electromagnetism", 6);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Atom", 7);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Electron", 8);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Particle_accelerator", 9);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Radionuclide", 10);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Ionizing_radiation", 11);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Gamma_ray", 12);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Electromagnetic_radiation", 13);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Wave", 14);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Quantity", 15);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Mass", 16);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Physical_object", 17);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Classical_mechanics", 18);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Macroscopic_scale", 19);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Micrometre", 20);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Millimetre", 21);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Metre", 22);
+    ht_insert(table,"https://en.wikipedia.org/wiki/International_System_of_Units", 23);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Second", 24);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Minute", 25);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Hour", 26);
+    ht_insert(table,"https://en.wikipedia.org/wiki/International_Atomic_Time", 27);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Leap_second", 28);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Earth's_rotation", 29);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Millisecond", 30);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Picosecond", 31);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Nanosecond", 32);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Microsecond", 33);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Time", 34);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Event_(particle_physics)", 35);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Bubble_chamber", 36);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Superheating", 37);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Thermodynamics", 38);
+    ht_insert(table,"https://en.wikipedia.org/wiki/Steam_engine", 39);
+ 
 
     curl_global_init(CURL_GLOBAL_ALL);
     CURLM *multi_handle = curl_multi_init();
@@ -138,10 +158,7 @@ int main(int argc, char *argv[])
                     if(res_status == 200)
                     {
                         // Save
-                        char *filename = calloc(strlen(url+30) + 7, sizeof(char));
-                        sprintf(filename, "%s_%05d", url+30, complete);
-                        save(filename, mem->buf);
-                        free(filename);
+                        save(url, strlen(url), mem->buf, mem->size, ht_search(table, url));
 
                         char *ctype;
                         curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &ctype);
