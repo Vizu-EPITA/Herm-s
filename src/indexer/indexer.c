@@ -50,8 +50,8 @@ void parseText(char *page)
         //else if (*page == '>')
             //*page++;
         else if (*page >= '0' && *page <= '9' ||
-                *page >= 'A' && *page <= 'Z' ||
-                *page >= 'a' && *page <= 'z')
+                 *page >= 'A' && *page <= 'Z' ||
+                 *page >= 'a' && *page <= 'z')
         {
             len = parseWord(page, wordBuf);
             printWord(wordBuf, len);
@@ -60,11 +60,12 @@ void parseText(char *page)
         else
             page++;
     }
+    free(wordBuf);
 }
 
 int main()
 {
-    char page[] = "<test> This has to be printed<not this>";
+    char page[] = "<test> This has to be printed<not this> \n Here is <some > more tests";
     parseText(page);
     return 0;
 }
