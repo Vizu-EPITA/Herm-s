@@ -6,10 +6,12 @@
 
 int main()
 {
-	char* str = decompress_file("../crawler/repository/3");
-	if(str == NULL)
+	htmlStruct *htmlInfo = decompress_file("../crawler/repository/3");
+	if(htmlInfo == NULL)
 		errx(EXIT_FAILURE, "failed to open the file");
-	printf("%s", str);
-	free(str);
+	printf("%s", htmlInfo->page);
+	free(htmlInfo->url);
+	free(htmlInfo->page);
+	free(htmlInfo);
 	return 0;
 }
