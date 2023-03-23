@@ -24,6 +24,7 @@ struct Node* newNode(int ID)
     newNode->adjListSize = 5;
     newNode->nbPrev = 0;
     newNode->prevListSize = 5;
+	newNode->pageRank = 0;
     return newNode;
 }
 
@@ -162,4 +163,30 @@ void printGraph(struct Graph* graph)
         }
     }
     printf("\n");
+}
+
+void saveGraph(struct Graph* graph)
+{
+	FILE *fptr = fopen("graphsave.txt", "w");
+	if (fptr == NULL)
+		errx(1, "graph.c: could not create a saving file");
+	fprintf(fptr, "%i %i\n", graph->order, graph->order);
+	struct Node *current;
+	for (int i = 0; i < graph->order; i++)
+	{
+		current = graph->nodes[i];
+		fprintf(fptr, "%i %i %i %i %i %lf|",
+				current->ID,
+				current->nbAdj,
+				current->adjListSize,
+				current->nbPrev,
+				current->prevListSize,
+				current->pageRank);
+		for (int j = 0; j < current->nbAdj; j++)
+			fprintf(fptr, "%i ", current->adjList[j]->ID);
+		for (int k = 0; k < current->nbPrev; k++)
+			fprintf(fptr, "%i ", current->prevList[k]->ID);
+		fprintf(fptr, "\n");
+	}
+	fclose(fptr);
 }

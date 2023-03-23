@@ -34,8 +34,4 @@ void freeGraph(struct Graph*);
 
 void printGraph(struct Graph* graph);
 
-
-
-
-
 #endif
