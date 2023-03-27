@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 
+int max_con = 200;
+
 static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
     size_t realsize = size * nmemb;
@@ -53,58 +55,100 @@ CURL *make_handle(char *url)
 
     return handle;
 }
-/*
-MemoryStruct *download(char *url)
+
+void *main_crawler(void* arg)
 {
-    CURL *curl_handle;
-    CURLcode res;
 
-    MemoryStruct *mem = malloc(sizeof(MemoryStruct));
-    if(mem == NULL)
-    {
-        errx(EXIT_FAILURE, "Out of memory\n");
-    }
+	curl_global_init(CURL_GLOBAL_ALL);
+	CURLM *multi_handle = curl_multi_init();
+    curl_multi_setopt(multi_handle, CURLMOPT_MAX_TOTAL_CONNECTIONS, max_con);
+    curl_multi_setopt(multi_handle, CURLMOPT_MAX_HOST_CONNECTIONS, 200);
 
-    mem->buf = malloc(1);    // Will be grown as needed by the realloc
-    mem->size = 0;              // No data at this point
+	// sets html start page
+	URLStruct *urlStruct = pop_url(queue);
+	for(size_t i = 0; i < urlStruct->count; i++)
+	{
+		curl_multi_add_handle(multi_handle, make_handle(urlStruct->url[i]));
+	}
+	free_urlstruct(urlStruct);
 
-//    curl_global_init(CURL_GLOBAL_ALL);
+	int msgs_left;
+	int pending = 0;
+	int complete = 0;
+	int still_running = 1;
+	while(1)
+	{
+		if(still_running == 0)
+		{
+			urlStruct = pop_url(queue);
+			for(size_t i = 0; i < urlStruct->count; i++)
+			{
+				curl_multi_add_handle(multi_handle, make_handle(urlStruct->url[i]));
+			}
+			pending += urlStruct->count;
+			free_urlstruct(urlStruct);
+			still_running = 1;
+		}
+		
+		int numfds;
+		curl_multi_wait(multi_handle, NULL, 0, 1000, &numfds);
+		curl_multi_perform(multi_handle, &still_running);
 
-    // Init the curl session
-    curl_handle = curl_easy_init();
+		// See how the trasnfers went
+		CURLMsg *m = NULL;
+		while((m = curl_multi_info_read(multi_handle, &msgs_left)))
+		{
+			if(m->msg == CURLMSG_DONNE)
+			{
+				CURL *handle = m->easy_handle;
+				char *url;
+				MemoryStruct *mem;
+				curl_easy_getinfo(handle, CURLINFO_PRIVATE, &mem);
+				curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &url);
+				if(m->data.result == CURL_OK)
+				{
+					long res_status;
+					curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &res_status);
+					if(res_status == 200)
+					{
+						// SAVE
+						save(url, strlen(url), mem->buf, mem->size, ht_search(table, url));
 
-    // Set URL to get here
-    curl_easy_setopt(curl_handle, CURLOPT_URL, url);
-
-    // Some servers do not like requests that are made without a user-agent
-    // field, so we provide one
-    curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
-
-    // send all data to this function
-    curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-
-    // Write the page body to this file handle
-    curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)mem);
-
-    // Get it
-    res = curl_easy_perform(curl_handle);
-
-    // Check for errors
-    if(res != CURLE_OK)
-    {
-        fprintf(stderr, "curl_easy_perform() failed: %s\n",
-            curl_easy_strerror(res));
-    }
-
-    // Free MemoryStruct
-//    free(mem->buf);
-//    free(mem);
-
-    // Cleanup curl stuff
-    curl_easy_cleanup(curl_handle);
-
-//    curl_global_cleanup();
-
-    return mem;
+						char *ctype;
+						curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &ctype);
+						printf("[%d] HTTP 200 (%s): %s\n", complete, ctype, url);
+						if(is_html(ctype) && mem->size > 100)
+						{
+							if(pending < max_requests && queue->first != NULL)
+							{
+								urlStruct = pop_url(queue);
+								for(size_t i = 0; i < urlStruct->count; i++)
+								{
+									curl_multi_add_handle(multi_handle, make_handle(urlStruct->url[i]));
+								}
+								pending += urlStruct->count;
+								free_urlstruct(urlStruct);
+								still_running = 1;
+							}
+						}
+					}
+					else
+					{
+						printf("[%d] HTTP %d: %s\n", complete, (int) res_status, url);
+					}
+				}
+				else
+				{
+					printf("[%d] Connection failure: %s\n", complete, url);
+				}
+				curl_multi_remove_handle(multi_handle, handle);
+				curl_easy_cleanup(handle);
+				fee(mem->buf);
+				free(mem);
+				complete++;
+				pending--;
+			}
+		}
+	}
+	curl_multi_cleanup(multi_handle);
 }
-*/
