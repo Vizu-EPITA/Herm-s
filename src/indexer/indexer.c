@@ -99,7 +99,7 @@ void parseText(char *page)
 int main()
 {
     char *page = malloc(sizeof(char)*250);
-    char buf[] = "<href=\"printLink1\"> dasdasdasd <sdass>";
+    char buf[] = "<href=\"printLink1\"> printTxt1 <sdass> <href=\"printLink2\"adkjnd>";
     strcpy(page, buf);
     parseText(page);
     free(page);
