@@ -227,7 +227,7 @@ struct Graph *loadGraph(char *filepath)
 				errx(1, "graph.c: Somethine went wrong while loading the Id and Pagerank");
 			if (scanVal == EOF)
 				break;
-			addEdge(graph, findOrCreateNode(graph, Id), findOrCreateNode(graph, adj));
+			addEdge(graph, graph->nodes[Id], graph->nodes[adj]);
 			nbAdj--;
 		}
 	}
@@ -298,17 +298,4 @@ struct Graph *linkFromFile(char *filepath)
     if (ableToRead == -1)
         err(1, "graph.c: Trouble reading the link file");
 	return graph;
-}
-
-int main()
-{
-	struct Graph *graph = linkFromFile("links.txt");
-	printf("GRAPH BEFORE SAVING\n");
-	printGraph(graph);
-	saveGraph(graph);
-	graph = loadGraph("graphsave.txt");
-    printf("GRAPH AFTER LOADING\n");
-	printGraph(graph);
-	freeGraph(graph);
-	return 0;
 }
