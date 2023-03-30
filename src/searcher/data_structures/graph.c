@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <err.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include "graph.h"
 
 // Initializes a new node and returns it.
@@ -74,6 +76,9 @@ void addEdge(struct Graph* graph, struct Node* src, struct Node* dest)
     if(src->ID >= graph->order || dest->ID >= graph->order)
         errx(1, "graph.c: trying to add an edge with a node not in the graph");
     struct Node* test;
+
+	if(src->ID == dest->ID)
+		return;
 
     // Checks if the edge already exists. If so, return
     for (int i = 0; i < src->nbAdj; i++)
@@ -165,28 +170,145 @@ void printGraph(struct Graph* graph)
     printf("\n");
 }
 
-void saveGraph(struct Graph* graph)
+void saveGraph(struct Graph *graph)
 {
 	FILE *fptr = fopen("graphsave.txt", "w");
 	if (fptr == NULL)
 		errx(1, "graph.c: could not create a saving file");
-	fprintf(fptr, "%i %i\n", graph->order, graph->order);
+	fprintf(fptr, "%i\n", graph->order);
 	struct Node *current;
 	for (int i = 0; i < graph->order; i++)
 	{
 		current = graph->nodes[i];
-		fprintf(fptr, "%i %i %i %i %i %lf|",
-				current->ID,
-				current->nbAdj,
-				current->adjListSize,
-				current->nbPrev,
-				current->prevListSize,
-				current->pageRank);
+		fprintf(fptr, "%i %i %lf | ", current->ID, current->nbAdj, current->pageRank);
 		for (int j = 0; j < current->nbAdj; j++)
 			fprintf(fptr, "%i ", current->adjList[j]->ID);
-		for (int k = 0; k < current->nbPrev; k++)
-			fprintf(fptr, "%i ", current->prevList[k]->ID);
+		//fprintf(fptr, "| ");
+		//for (int k = 0; k < current->nbPrev; k++)
+		//	fprintf(fptr, "%i ", current->prevList[k]->ID);
 		fprintf(fptr, "\n");
 	}
 	fclose(fptr);
+}
+
+struct Graph *loadGraph(char *filepath)
+{
+	FILE *fptr = fopen(filepath, "r");
+	if (fptr == NULL)
+		errx(1, "graph.c: could not create a saving file");
+	int scanVal;
+	int order;
+	int Id;
+	int nbAdj;
+	int adj;
+	double pageRank;
+	char c;
+	if (fscanf(fptr, "%i", &order) == 0)
+		errx(1, "graph.c: Somethine went wrong while loading the order");
+	struct Graph *graph = graphInit(order);
+	while (!feof(fptr))
+	{
+		scanVal = fscanf(fptr, "%i %i %lf", &Id, &nbAdj, &pageRank);
+		if (scanVal == 0)
+			errx(1, "graph.c: Somethine went wrong while loading the Id and Pagerank");
+		if (scanVal == EOF)
+			break;
+		graph->nodes[Id]->pageRank = pageRank;
+		while ((c = fgetc(fptr)) != '|' && !feof(fptr))
+		{
+			continue;
+		}
+		if (feof(fptr))
+			break;
+		while (nbAdj > 0)
+		{
+			scanVal = fscanf(fptr, "%i", &adj);
+			if (scanVal == 0)
+				errx(1, "graph.c: Somethine went wrong while loading the Id and Pagerank");
+			if (scanVal == EOF)
+				break;
+			addEdge(graph, findOrCreateNode(graph, Id), findOrCreateNode(graph, adj));
+			nbAdj--;
+		}
+	}
+	return graph;
+}
+
+struct Graph *linkFromFile(char *filepath)
+{
+	// Has to initialize the graph before starting, call one time only
+    struct Graph *graph = graphInit(1);
+    int fd;
+    int ableToRead;
+    //Simple bool to state if we are readind the from ID (1) or to ID (!= 1)
+    int readFrom = 1;
+    int fromId = 0;
+    int toId = 0;
+    struct Node *fromNode;
+    struct Node *toNode;
+    char character;
+    if ((fd = open(filepath, O_RDONLY)) == -1)
+        err(1, "graph.c: Could not open the link file");
+    ableToRead = read(fd, &character, 1);
+    while (ableToRead > 0)
+    {
+        // The "from node" has been parsed
+        if (character == '|')
+        {
+            fromNode = findOrCreateNode(graph, fromId);
+            readFrom = 0;
+            ableToRead = read(fd, &character, 1);
+            continue;
+        }
+        // The "to node" has been parsed, proceeds to link them
+        if (character == ',')
+        {
+            toNode = findOrCreateNode(graph, toId);
+            printf("Linking %i to %i\n", fromId, toId);
+            addEdge(graph, fromNode, toNode);
+            toId = 0;
+            ableToRead = read(fd, &character, 1);
+            continue;
+        }
+        // Same as before but resets the IDs since its the end of the line
+        if (character == '\n')
+        {
+            toNode = findOrCreateNode(graph, toId);
+            printf("Linking %i to %i\n", fromId, toId);
+            addEdge(graph, fromNode, toNode);
+            readFrom = 1;
+            fromId = 0;
+            toId = 0;
+            ableToRead = read(fd, &character, 1);
+            continue;
+        }
+        if (readFrom == 1)
+        {
+            fromId = fromId * 10 ;
+            fromId += character - '0';
+        }
+        else
+        {
+            toId = toId * 10;
+            toId += character - '0';
+        }
+        ableToRead = read(fd, &character, 1);
+    }
+
+    if (ableToRead == -1)
+        err(1, "graph.c: Trouble reading the link file");
+	return graph;
+}
+
+int main()
+{
+	struct Graph *graph = linkFromFile("links.txt");
+	printf("GRAPH BEFORE SAVING\n");
+	printGraph(graph);
+	saveGraph(graph);
+	graph = loadGraph("graphsave.txt");
+    printf("GRAPH AFTER LOADING\n");
+	printGraph(graph);
+	freeGraph(graph);
+	return 0;
 }

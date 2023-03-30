@@ -68,6 +68,7 @@ int main()
     if (ableToRead == -1)
         err(1, "links.c: Trouble reading the link file");
     printGraph(graph);
-    freeGraph(graph);
+	saveGraph(graph);
+	freeGraph(graph);
     return 0;
 }

@@ -4,10 +4,10 @@
 struct Node
 {
     int ID;
-    struct Node** adjList;
+    struct Node **adjList;
     int nbAdj;
     int adjListSize;
-    struct Node** prevList;
+    struct Node **prevList;
     int nbPrev;
     int prevListSize;
     double pageRank;
@@ -16,22 +16,28 @@ struct Node
 struct Graph
 {
     int order;
-    struct Node** nodes;
+    struct Node **nodes;
     int sizeNodesList;
 };
 
-struct Node* newNode(int ID);
+struct Node *newNode(int ID);
 
-struct Graph* graphInit(int order);
+struct Graph *graphInit(int order);
 
-void addNode(struct Graph* graph);
+void addNode(struct Graph *graph);
 
-void addEdge(struct Graph* graph, struct Node* src, struct Node* dest);
+void addEdge(struct Graph *graph, struct Node *src, struct Node *dest);
 
 struct Node *findOrCreateNode(struct Graph *graph, int docID);
 
-void freeGraph(struct Graph*);
+void freeGraph(struct Graph *graph);
 
-void printGraph(struct Graph* graph);
+void printGraph(struct Graph *graph);
+
+void saveGraph(struct Graph *graph);
+
+struct Graph *loadGraph(char *filepath);
+
+struct Graph *linkFromFile(char *filepath);
 
 #endif
