@@ -29,38 +29,15 @@ size_t parseWord(char *page, char *wordBuf /*,[HTBLE]*/)
     return len;
 }
 
-size_t parseLink(char *page, char *linkBuf, size_t *stepForward)
+size_t parseLink(char *page, char *linkBuf)
 {
-    size_t len = 1;
-    page++;
-    *stepForward++;
-    if (*page == 'r')
+    size_t len = 0;
+    while (*page != 0 && *page != '\"')
     {
+        *linkBuf = *page;
+        linkBuf++;
         page++;
-        *stepForward++;
-        if (*page == 'e')
-        {
-            page++;
-            *stepForward++;
-            if (*page == 'f')
-            {
-                while (*page != 0 && *page != '\"')
-                {
-                    page++;
-                    *stepForward++;
-                }
-                page++;
-                *stepForward++;
-                while (*page != 0 && *page != '\"')
-                {
-                    *linkBuf = *page;
-                    linkBuf++;
-                    page++;
-                    len++;
-                    *stepForward++;
-                }
-            }
-        }
+        len++;
     }
     return len;
 }
@@ -71,11 +48,9 @@ void parseText(char *page)
     char *linkBuf = malloc(sizeof(char)*300);
     size_t wordLen;
     size_t linkLen; 
-    size_t stepForward;
     while (*page != 0)
     {
-    //printf("parseText loop\n");
-    // End of file (EOF)
+        // End of file (EOF)
         if (*page == 0)
             return;
         // Tag detected
@@ -84,29 +59,33 @@ void parseText(char *page)
             // Search end of tag or EOF
             while (*page != '>' && *page != 0)
             {
-                if (*page == 'h')
+                if (*page == 'h' && strncmp(page, "href=\"", 6) == 0)
                 {
-                    linkLen = parseLink(page, linkBuf, &stepForward);
+                    while (*page != 0 && *page != '\"')
+                    {
+                        page++;
+                    }
+                    page++;
+                    linkLen = parseLink(page, linkBuf);
                     if (linkLen > 1)
                     {
-                        printf("%i\n", linkLen);
+                        //printf("%i\n", linkLen);
+                        //EDIT
                         printWord(linkBuf, linkLen);
                     }
-                    page += stepForward;
-                    stepForward = 0;
+                    page += linkLen;
                 }
                 else
                     page++;
             }
         }
         // End of tag
-        //else if (*page == '>')
-            //*page++;
         else if (*page >= '0' && *page <= '9' ||
                  *page >= 'A' && *page <= 'Z' ||
                  *page >= 'a' && *page <= 'z')
         {
             wordLen = parseWord(page, wordBuf);
+            //EDIT
             printWord(wordBuf, wordLen);
             page += wordLen;
         }
@@ -119,7 +98,10 @@ void parseText(char *page)
 
 int main()
 {
-    char page[] = "printOutside1 <href=\"printLink1\"> <s>";
+    char *page = malloc(sizeof(char)*250);
+    char buf[] = "<href=\"printLink1\"> dasdasdasd <sdass>";
+    strcpy(page, buf);
     parseText(page);
+    free(page);
     return 0;
 }
