@@ -1,15 +1,38 @@
 #include "../../include/indexer/indexer.h"
+#include "../../include/crawler/repository.h"
+#include "../../tools/hash_table.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <zlib.h>
 #include <err.h>
 #include <string.h>
 
-/*
-void Indexer()
+void *Indexer(void *arg)
 {
+	URLQueue *urlQueue;
+	FileQueue *fileQueue;
+	char *filename;
+	htmlStruct *htmlInfo;
+	while(1)
+	{
+		filename = pop_file(fileQueue);
+		htmlInfo = decompress_file(filename);
+		free(filename);
+
+		// TRAITEMENT
+		printf("%s\n", htmlInfo->url);
+
+
+		free_htmlstruct(htmlInfo);
+	}
 }
-*/
+
+void free_htmlstruct(htmlStruct *htmlInfo)
+{
+	free(htmlInfo->page);
+	free(htmlInfo->url);
+	free(htmlInfo);
+}
 
 htmlStruct* decompress_file(char* filename)
 {

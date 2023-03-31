@@ -13,6 +13,11 @@ typedef struct htmlStruct
 	char* url;
 } htmlStruct;
 
+
+void *Indexer(void *arg);
+
+void free_htmlstruct(htmlStruct *htmlInfo);
+
 htmlStruct* decompress_file(char* filename);
 
 #endif
