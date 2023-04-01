@@ -20,4 +20,6 @@ void free_htmlstruct(htmlStruct *htmlInfo);
 
 htmlStruct* decompress_file(int32_t file);
 
+void parseText(htmlStruct *htmlInfo);
+
 #endif
