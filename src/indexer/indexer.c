@@ -148,9 +148,9 @@ size_t parseLink(char *page, char *linkBuf)
 void parseText(htmlStruct *htmlInfo)
 {
 	char *page = htmlInfo->page; 
-	//wget_iri_t *base = wget_iri_parse(htmlInfo->url, NULL);
-    char *wordBuf = malloc(sizeof(char)*100);
-    char *linkBuf = malloc(sizeof(char)*300);
+	wget_iri_t *base = wget_iri_parse(htmlInfo->url, NULL);
+    char *wordBuf = malloc(sizeof(char)*300);
+    char *linkBuf = malloc(sizeof(char)*600);
     size_t wordLen;
     size_t linkLen; 
     while (*page != 0)
@@ -172,19 +172,17 @@ void parseText(htmlStruct *htmlInfo)
                     }
                     page++;
                     linkLen = parseLink(page, linkBuf);
-                    if (linkLen > 1)
+                    if (linkLen > 0)
                     {
                         //printf("%i\n", linkLen);
                         //EDIT
                         //printWord(linkBuf, linkLen);
 						
-						/*
 						wget_buffer_t *buf = wget_buffer_alloc(linkLen + htmlInfo->urllen);
 						printf("INDEXER: Link found: %s\n",
 						wget_iri_relative_to_abs(base, linkBuf, linkLen, buf));
 
 						wget_buffer_free(&buf);
-						*/
                     }
                     page += linkLen;
                 }
@@ -207,7 +205,7 @@ void parseText(htmlStruct *htmlInfo)
     }
     free(wordBuf);
     free(linkBuf);
-	//wget_iri_free(&base);
+	wget_iri_free(&base);
 }
 /*
 int main()
