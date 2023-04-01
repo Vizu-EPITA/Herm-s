@@ -1,4 +1,7 @@
+#include "../main.h"
+#include "../errno.h"
 #include "../../include/indexer/indexer.h"
+#include "../../include/crawler/url_server.h"
 #include "../../include/crawler/repository.h"
 #include "../../tools/hash_table.h"
 #include <stdlib.h>
@@ -7,20 +10,20 @@
 #include <err.h>
 #include <string.h>
 
-void *Indexer(void *arg)
+void *indexer(void *arg)
 {
-	URLQueue *urlQueue;
-	FileQueue *fileQueue;
-	char *filename;
+	thread_data *thr_data = (thread_data *) arg;
+
+//	URLQueue *urlQueue;
+	int32_t file;
 	htmlStruct *htmlInfo;
 	while(1)
 	{
-		filename = pop_file(fileQueue);
-		htmlInfo = decompress_file(filename);
-		free(filename);
+		file = pop_file(thr_data->queue_file);
+		htmlInfo = decompress_file(file);
 
 		// TRAITEMENT
-		printf("%s\n", htmlInfo->url);
+		printf("INDEXER: indexing the url: %s\n", htmlInfo->url);
 
 
 		free_htmlstruct(htmlInfo);
@@ -34,12 +37,18 @@ void free_htmlstruct(htmlStruct *htmlInfo)
 	free(htmlInfo);
 }
 
-htmlStruct* decompress_file(char* filename)
+htmlStruct* decompress_file(int32_t file)
 {
+	char path[60];
+	sprintf(path, "./repository/%d", file);
+
 	// Open the file
-	FILE *fp = fopen(filename, "r");
+	FILE *fp = fopen(path, "r");
 	if(fp == NULL)
-		return NULL;
+	{
+		printf("opening file failed: %s\n", strerror(errno));
+		errx(EXIT_FAILURE, "INDEXER: failed to open the file");
+	}
 
 	// Calculate the length of the file
 	if(fseek(fp, 0, SEEK_END) < 0)
@@ -66,10 +75,11 @@ htmlStruct* decompress_file(char* filename)
 	fread(&htmlInfo->pagelen, sizeof(int32_t), 1, fp);
 
 	// Read the url from the file
-	htmlInfo->url = malloc(sizeof(char) * htmlInfo->urllen);
+	htmlInfo->url = malloc(sizeof(char) * htmlInfo->urllen + 1);
 	if(htmlInfo->url == NULL)
 		errx(EXIT_FAILURE, "Not enough memory!");
 	fread(htmlInfo->url, sizeof(char), htmlInfo->urllen, fp);
+	htmlInfo->url[htmlInfo->urllen] = 0;
 
 	// Read compressed page
 	long compressedSize = fileSize - ftell(fp);
@@ -79,13 +89,14 @@ htmlStruct* decompress_file(char* filename)
 	fread(compressed, sizeof(char), compressedSize, fp);
 
 	// Uncomporess the compressed page
-	char *page = malloc(sizeof(char) * htmlInfo->pagelen);
+	char *page = malloc(sizeof(char) * htmlInfo->pagelen + 1);
 	if(page == NULL)
 		errx(EXIT_FAILURE, "Not enough memory!");
 	int res = uncompress((unsigned char *) page, (unsigned long *) &htmlInfo->pagelen,
 		(unsigned char *) compressed, (unsigned long) compressedSize);
 	if(res != Z_OK)
 		errx(EXIT_FAILURE, "Uncompression error!");
+	page[htmlInfo->pagelen] = 0;
 	htmlInfo->page = page;
 
 	free(compressed);

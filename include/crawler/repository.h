@@ -6,7 +6,7 @@
 #include <semaphore.h>
 
 typedef struct FileStruct{
-	char *name;
+	int32_t file;
 	struct FileStruct *next;
 } FileStruct;
 
@@ -22,9 +22,9 @@ void free_filestruct(FileStruct *fileStruct);
 
 void free_file_queue(FileQueue *q);
 
-void add_file(FileQueue *q, char *file);
+void add_file(FileQueue *q, int32_t file);
 
-char *pop_file(FileQueue *q);
+int32_t pop_file(FileQueue *q);
 
 
 #endif

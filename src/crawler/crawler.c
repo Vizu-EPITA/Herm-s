@@ -1,4 +1,8 @@
+#include "../main.h"
 #include "./../../include/crawler/crawler.h"
+#include "../../include/crawler/repository.h"
+#include "../../include/crawler/store_server.h"
+#include "../../include/crawler/url_server.h"
 #include <err.h>
 #include <stdlib.h>
 #include <curl/curl.h>
@@ -56,8 +60,11 @@ CURL *make_handle(char *url)
     return handle;
 }
 
-void *main_crawler(void* arg)
+void *crawler(void* arg)
 {
+	thread_data *thr_data = (thread_data *) arg;
+
+	int max_requests = 10;
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	CURLM *multi_handle = curl_multi_init();
@@ -65,7 +72,7 @@ void *main_crawler(void* arg)
     curl_multi_setopt(multi_handle, CURLMOPT_MAX_HOST_CONNECTIONS, 200);
 
 	// sets html start page
-	URLStruct *urlStruct = pop_url(queue);
+	URLStruct *urlStruct = pop_url(thr_data->queue_url);
 	for(size_t i = 0; i < urlStruct->count; i++)
 	{
 		curl_multi_add_handle(multi_handle, make_handle(urlStruct->url[i]));
@@ -80,7 +87,7 @@ void *main_crawler(void* arg)
 	{
 		if(still_running == 0)
 		{
-			urlStruct = pop_url(queue);
+			urlStruct = pop_url(thr_data->queue_url);
 			for(size_t i = 0; i < urlStruct->count; i++)
 			{
 				curl_multi_add_handle(multi_handle, make_handle(urlStruct->url[i]));
@@ -98,30 +105,33 @@ void *main_crawler(void* arg)
 		CURLMsg *m = NULL;
 		while((m = curl_multi_info_read(multi_handle, &msgs_left)))
 		{
-			if(m->msg == CURLMSG_DONNE)
+			if(m->msg == CURLMSG_DONE)
 			{
 				CURL *handle = m->easy_handle;
 				char *url;
 				MemoryStruct *mem;
 				curl_easy_getinfo(handle, CURLINFO_PRIVATE, &mem);
 				curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &url);
-				if(m->data.result == CURL_OK)
+				if(m->data.result == CURLE_OK)
 				{
 					long res_status;
 					curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &res_status);
 					if(res_status == 200)
 					{
 						// SAVE
-						save(url, strlen(url), mem->buf, mem->size, ht_search(table, url));
+						//char filename[33];
+						//sprintf(filename, "%d", ht_search(thr_data->table_docID, url));
+						save(url, strlen(url), mem->buf, mem->size, ht_search(thr_data->table_docID, url));
+						add_file(thr_data->queue_file, ht_search(thr_data->table_docID, url));
 
 						char *ctype;
 						curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &ctype);
-						printf("[%d] HTTP 200 (%s): %s\n", complete, ctype, url);
+						printf("CRAWLER: [%d] HTTP 200 (%s): %s\n", complete, ctype, url);
 						if(is_html(ctype) && mem->size > 100)
 						{
-							if(pending < max_requests && queue->first != NULL)
+							if(pending < max_requests && thr_data->queue_url->first != NULL)
 							{
-								urlStruct = pop_url(queue);
+								urlStruct = pop_url(thr_data->queue_url);
 								for(size_t i = 0; i < urlStruct->count; i++)
 								{
 									curl_multi_add_handle(multi_handle, make_handle(urlStruct->url[i]));
@@ -134,7 +144,7 @@ void *main_crawler(void* arg)
 					}
 					else
 					{
-						printf("[%d] HTTP %d: %s\n", complete, (int) res_status, url);
+						printf("CRAWLER: [%d] HTTP %d: %s\n", complete, (int) res_status, url);
 					}
 				}
 				else
@@ -143,7 +153,7 @@ void *main_crawler(void* arg)
 				}
 				curl_multi_remove_handle(multi_handle, handle);
 				curl_easy_cleanup(handle);
-				fee(mem->buf);
+				free(mem->buf);
 				free(mem);
 				complete++;
 				pending--;

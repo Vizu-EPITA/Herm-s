@@ -10,6 +10,8 @@ typedef struct MemoryStruct{
     size_t size;
 } MemoryStruct;
 
+void *crawler(void *arg);
+
 MemoryStruct* download(char *url);
 
 CURL *make_handle(char *url);

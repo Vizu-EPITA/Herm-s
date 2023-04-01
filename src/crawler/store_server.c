@@ -9,23 +9,13 @@
 
 void save(char *url, int32_t urllen, char *html, int32_t pagelen, int32_t docid)
 {
-    char repo[] = "./repository/";
-	char docidStr[33] = "";
-	sprintf(docidStr, "%d", docid);
+    char path[60];
+	sprintf(path, "./repository/%d", docid);
 
-    char *dest = calloc(strlen(docidStr) + strlen(repo) + 1, sizeof(char));
-    if(dest == NULL)
-    {
-        errx(EXIT_FAILURE, "Out of memory\n");
-    }
-
-    strcpy(dest, repo);
-    strcat(dest, docidStr);
-
-    FILE *fp = fopen(dest, "w");
+    FILE *fp = fopen(path, "w");
     if(fp == NULL)
     {
-        errx(EXIT_FAILURE, "failed to open the file");
+        errx(EXIT_FAILURE, "Store server: failed to open the file");
     }
 
     // Compress
@@ -54,6 +44,5 @@ void save(char *url, int32_t urllen, char *html, int32_t pagelen, int32_t docid)
     fwrite(compressed, compressedLength, 1, fp);
 
     free(compressed);
-    free(dest);
     fclose(fp);
 }

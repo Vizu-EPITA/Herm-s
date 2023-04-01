@@ -25,7 +25,6 @@ FileQueue *init_file_queue()
 
 void free_filestruct(FileStruct *fileStruct)
 {
-	free(fileStruct->name);
 	free(fileStruct);
 }
 
@@ -58,22 +57,16 @@ void free_file_queue(FileQueue *q)
 	free(q);
 }
 
-void add_file(FileQueue *q, char *file)
+void add_file(FileQueue *q, int32_t file)
 {
 	// Lock the queue
 	sem_wait(&q->lock);
-
-	char *filename = calloc(strlen(file) + 1, sizeof(char));
-	if(filename == NULL)
-		errx(EXIT_FAILURE, "Out of memory");
-
-	strcpy(filename, file);
 
 	FileStruct *fileStruct = malloc(sizeof(FileStruct));
 	if(fileStruct == NULL)
 		errx(EXIT_FAILURE, "Out of memory");
 	
-	fileStruct->name = filename;
+	fileStruct->file = file;
 	
 	if(q->first == NULL)
 	{
@@ -91,7 +84,7 @@ void add_file(FileQueue *q, char *file)
 	sem_post(&q->size);
 }
 
-char *pop_file(FileQueue *q)
+int32_t pop_file(FileQueue *q)
 {
 	// Decrementing the size
 	sem_wait(&q->size);
@@ -112,8 +105,7 @@ char *pop_file(FileQueue *q)
 		q->first->next = tmp->next;
 	}
 
-	char *file = tmp->name;
-	free(tmp);
+	int32_t file = tmp->file;
 
 	//Unlocking the queue
 	sem_post(&q->lock);
