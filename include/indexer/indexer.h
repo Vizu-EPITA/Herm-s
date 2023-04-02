@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include "../../src/searcher/data_structures/graph.h"
 
 typedef struct htmlStruct
 {
@@ -20,6 +21,6 @@ void free_htmlstruct(htmlStruct *htmlInfo);
 
 htmlStruct* decompress_file(int32_t file);
 
-void parseText(htmlStruct *htmlInfo);
+void parseText(htmlStruct *htmlInfo, HashTable *table_docID, URLQueue *queue_url, struct Graph *graph);
 
 #endif

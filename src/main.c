@@ -4,6 +4,7 @@
 #include "../include/indexer/indexer.h"
 #include "../tools/hash_table.h"
 #include "../include/crawler/crawler.h"
+#include "./searcher/data_structures/graph.h"
 #include <pthread.h>
 #include <err.h>
 
@@ -22,10 +23,13 @@ int main()
 	thr_data->queue_url = init_url_queue();
 	thr_data->queue_file = init_file_queue();
 
+	thr_data->graph = graphInit(1);
+
 	pthread_create(&thr_crawler, NULL, crawler, (void *)thr_data);
 	pthread_create(&thr_indexer, NULL, indexer, (void *)thr_data);
 
 	ht_insert(thr_data->table_docID,"https://en.wikipedia.org/wiki/Main_Page", 0);
+	/*
    	ht_insert(thr_data->table_docID,"https://en.wikipedia.org/wiki/Mathematics", 1);
    	ht_insert(thr_data->table_docID,"https://en.wikipedia.org/wiki/Physics", 2);
     ht_insert(thr_data->table_docID,"https://en.wikipedia.org/wiki/Elementary_particle", 3);
@@ -65,9 +69,11 @@ int main()
     ht_insert(thr_data->table_docID,"https://en.wikipedia.org/wiki/Superheating", 37);
     ht_insert(thr_data->table_docID,"https://en.wikipedia.org/wiki/Thermodynamics", 38);
     ht_insert(thr_data->table_docID,"https://en.wikipedia.org/wiki/Steam_engine", 39);
+	*/
 
 
 	add_url(thr_data->queue_url, "https://en.wikipedia.org/wiki/Main_Page");
+	/*
 	add_url(thr_data->queue_url, "https://en.wikipedia.org/wiki/Mathematics");
 	add_url(thr_data->queue_url, "https://en.wikipedia.org/wiki/Physics");
 	add_url(thr_data->queue_url, "https://en.wikipedia.org/wiki/Elementary_particle");
@@ -107,6 +113,7 @@ int main()
 	add_url(thr_data->queue_url, "https://en.wikipedia.org/wiki/Superheating");
 	add_url(thr_data->queue_url, "https://en.wikipedia.org/wiki/Thermodynamics");
 	add_url(thr_data->queue_url, "https://en.wikipedia.org/wiki/Steam_engine");
+	*/
 
 	pthread_exit(NULL);
 }

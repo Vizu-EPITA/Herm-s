@@ -4,6 +4,7 @@
 #include "../../include/crawler/url_server.h"
 #include "../../include/crawler/repository.h"
 #include "../../tools/hash_table.h"
+#include "../searcher/data_structures/graph.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <zlib.h>
@@ -11,25 +12,34 @@
 #include <string.h>
 #include <wget.h>
 
+int32_t docID_count = 0;
+
 void *indexer(void *arg)
 {
 	thread_data *thr_data = (thread_data *) arg;
+	docID_count = thr_data->table_docID->count;
 
 //	URLQueue *urlQueue;
 	int32_t file;
 	htmlStruct *htmlInfo;
 	while(1)
 	{
+		if(docID_count > 300)
+			break;
 		file = pop_file(thr_data->queue_file);
 		htmlInfo = decompress_file(file);
 
 		// TRAITEMENT
 		printf("INDEXER: indexing the url: %s\n", htmlInfo->url);
-		parseText(htmlInfo);
+		parseText(htmlInfo, thr_data->table_docID, thr_data->queue_url, thr_data->graph);
 
 
 		free_htmlstruct(htmlInfo);
 	}
+	printGraph(thr_data->graph);
+	initRank(thr_data->graph);
+	rank(thr_data->graph);
+	printRank(thr_data->graph);
 }
 
 void free_htmlstruct(htmlStruct *htmlInfo)
@@ -145,12 +155,12 @@ size_t parseLink(char *page, char *linkBuf)
     return len;
 }
 
-void parseText(htmlStruct *htmlInfo)
+void parseText(htmlStruct *htmlInfo, HashTable *table_docID, URLQueue *queue_url, struct Graph *graph)
 {
 	char *page = htmlInfo->page; 
 	wget_iri_t *base = wget_iri_parse(htmlInfo->url, NULL);
-    char *wordBuf = malloc(sizeof(char)*300);
-    char *linkBuf = malloc(sizeof(char)*600);
+    char *wordBuf = malloc(sizeof(char)*2500);
+    char *linkBuf = malloc(sizeof(char)*2500);
     size_t wordLen;
     size_t linkLen; 
     while (*page != 0)
@@ -179,8 +189,19 @@ void parseText(htmlStruct *htmlInfo)
                         //printWord(linkBuf, linkLen);
 						
 						wget_buffer_t *buf = wget_buffer_alloc(linkLen + htmlInfo->urllen);
-						printf("INDEXER: Link found: %s\n",
-						wget_iri_relative_to_abs(base, linkBuf, linkLen, buf));
+						const char *absurl = wget_iri_relative_to_abs(base, linkBuf, linkLen, buf);
+						char *wikipedia_url = "https://en.wikipedia.org";
+						if(strncmp(wikipedia_url, absurl, strlen(wikipedia_url)) == 0)
+						{
+							//printf("INDEXER: Link found: id = %d, url =%s\n", docID_count, absurl);
+							if(ht_search(table_docID, absurl) == -1)
+							{
+								docID_count++;
+								ht_insert(table_docID, absurl, docID_count);
+								add_url(queue_url, absurl);
+								addEdge(graph, findOrCreateNode(graph, htmlInfo->docid), findOrCreateNode(graph, docID_count));
+							}
+						}
 
 						wget_buffer_free(&buf);
                     }

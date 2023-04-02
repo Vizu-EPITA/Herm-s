@@ -32,7 +32,7 @@ URLQueue *init_url_queue()
     return q;
 }
 
-void add_url(URLQueue *q, char *url)
+void add_url(URLQueue *q, const char *url)
 {
     // Lock the queue
     sem_wait(&q->lock);

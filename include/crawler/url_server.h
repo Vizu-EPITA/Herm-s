@@ -24,7 +24,7 @@ void free_urlstruct(URLStruct *urlStruct);
 
 void free_url_queue(URLQueue *q);
 
-void add_url(URLQueue *q, char *url);
+void add_url(URLQueue *q, const char *url);
 
 URLStruct* pop_url(URLQueue *q);
 
