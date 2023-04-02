@@ -5,6 +5,7 @@
 #include "../../include/crawler/repository.h"
 #include "../../tools/hash_table.h"
 #include "../searcher/data_structures/graph.h"
+#include "../searcher/pagerank.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <zlib.h>
@@ -22,9 +23,10 @@ void *indexer(void *arg)
 //	URLQueue *urlQueue;
 	int32_t file;
 	htmlStruct *htmlInfo;
+	int file_count = 0;
 	while(1)
 	{
-		if(docID_count > 300)
+		if(file_count > 3000)
 			break;
 		file = pop_file(thr_data->queue_file);
 		htmlInfo = decompress_file(file);
@@ -35,11 +37,13 @@ void *indexer(void *arg)
 
 
 		free_htmlstruct(htmlInfo);
+		file_count++;
 	}
 	printGraph(thr_data->graph);
 	initRank(thr_data->graph);
-	rank(thr_data->graph);
+	rank(thr_data->graph, 20);
 	printRank(thr_data->graph);
+	return NULL;
 }
 
 void free_htmlstruct(htmlStruct *htmlInfo)
@@ -75,7 +79,7 @@ htmlStruct* decompress_file(int32_t file)
 		fclose(fp);
 		return NULL;
 	}
-	
+
 	// Allocating the htmlstruct info
 	htmlStruct *htmlInfo = malloc(sizeof(htmlStruct));
 	if(htmlInfo == NULL)
@@ -127,7 +131,7 @@ void printWord(char *wordBuf, size_t len)
 }
 
 size_t parseWord(char *page, char *wordBuf /*,[HTBLE]*/)
-{   
+{
     size_t len = 0;
     while (*page != 0 && (
           (*page >= '0' && *page <= '9') ||
@@ -157,12 +161,12 @@ size_t parseLink(char *page, char *linkBuf)
 
 void parseText(htmlStruct *htmlInfo, HashTable *table_docID, URLQueue *queue_url, struct Graph *graph)
 {
-	char *page = htmlInfo->page; 
+	char *page = htmlInfo->page;
 	wget_iri_t *base = wget_iri_parse(htmlInfo->url, NULL);
     char *wordBuf = malloc(sizeof(char)*2500);
     char *linkBuf = malloc(sizeof(char)*2500);
     size_t wordLen;
-    size_t linkLen; 
+    size_t linkLen;
     while (*page != 0)
     {
         // End of file (EOF)
@@ -187,7 +191,7 @@ void parseText(htmlStruct *htmlInfo, HashTable *table_docID, URLQueue *queue_url
                         //printf("%i\n", linkLen);
                         //EDIT
                         //printWord(linkBuf, linkLen);
-						
+
 						wget_buffer_t *buf = wget_buffer_alloc(linkLen + htmlInfo->urllen);
 						const char *absurl = wget_iri_relative_to_abs(base, linkBuf, linkLen, buf);
 						char *wikipedia_url = "https://en.wikipedia.org";

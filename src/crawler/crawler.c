@@ -44,7 +44,7 @@ CURL *make_handle(char *url)
     // Important: use HTTP2 over HTTPS
     curl_easy_setopt(handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS);
     curl_easy_setopt(handle, CURLOPT_URL, url);
-    
+
     // Buffer body
     MemoryStruct *mem = malloc(sizeof(MemoryStruct));
     mem->size = 0;
@@ -96,7 +96,7 @@ void *crawler(void* arg)
 			free_urlstruct(urlStruct);
 			still_running = 1;
 		}
-		
+
 		int numfds;
 		curl_multi_wait(multi_handle, NULL, 0, 1000, &numfds);
 		curl_multi_perform(multi_handle, &still_running);
@@ -121,9 +121,12 @@ void *crawler(void* arg)
 						// SAVE
 						//char filename[33];
 						//sprintf(filename, "%d", ht_search(thr_data->table_docID, url));
-						save(url, strlen(url), mem->buf, mem->size, ht_search(thr_data->table_docID, url));
-						add_file(thr_data->queue_file, ht_search(thr_data->table_docID, url));
-
+						int32_t docID = ht_search(thr_data->table_docID, url);
+						if (docID != -1)
+						{
+							save(url, strlen(url), mem->buf, mem->size, docID);
+							add_file(thr_data->queue_file, docID);
+						}
 						char *ctype;
 						curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &ctype);
 						printf("CRAWLER: [%d] HTTP 200 (%s): %s\n", complete, ctype, url);

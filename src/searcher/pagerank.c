@@ -43,20 +43,3 @@ void printRank(struct Graph* graph)
                 node, graph->nodes[node]->pageRank);
     }
 }
-
-int main()
-{
-	struct Graph *graph = linkFromFile("links.txt");
-	initRank(graph);
-	rank(graph, 50);
-	printf("GRAPH BEFORE SAVING\n");
-	printGraph(graph);
-	printRank(graph);
-	saveGraph(graph);
-	graph = loadGraph("graphsave.txt");
-    printf("GRAPH AFTER LOADING\n");
-	printGraph(graph);
-	printRank(graph);
-	freeGraph(graph);
-	return 0;
-}

@@ -296,6 +296,8 @@ struct Graph *linkFromFile(char *filepath)
     }
 
     if (ableToRead == -1)
+	{
         err(1, "graph.c: Trouble reading the link file");
+	}
 	return graph;
 }
