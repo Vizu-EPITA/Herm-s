@@ -8,6 +8,7 @@
 #include <curl/curl.h>
 #include <stdio.h>
 #include <string.h>
+#include <pthread.h>
 
 int max_con = 200;
 
@@ -64,6 +65,8 @@ void *crawler(void* arg)
 {
 	thread_data *thr_data = (thread_data *) arg;
 
+	unsigned long file_count = 0;
+
 	int max_requests = 10;
 
 	curl_global_init(CURL_GLOBAL_ALL);
@@ -85,6 +88,10 @@ void *crawler(void* arg)
 	int still_running = 1;
 	while(1)
 	{
+		if(file_count >= thr_data->limit)
+		{
+			break;
+		}
 		if(still_running == 0)
 		{
 			urlStruct = pop_url(thr_data->queue_url);
@@ -126,6 +133,7 @@ void *crawler(void* arg)
 						{
 							save(url, strlen(url), mem->buf, mem->size, docID);
 							add_file(thr_data->queue_file, docID);
+							file_count++;
 						}
 						char *ctype;
 						curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &ctype);
@@ -164,4 +172,5 @@ void *crawler(void* arg)
 		}
 	}
 	curl_multi_cleanup(multi_handle);
+	pthread_exit(NULL);
 }

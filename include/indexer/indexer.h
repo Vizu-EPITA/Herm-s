@@ -21,6 +21,6 @@ void free_htmlstruct(htmlStruct *htmlInfo);
 
 htmlStruct* decompress_file(int32_t file);
 
-void parseText(htmlStruct *htmlInfo, HashTable *table_docID, URLQueue *queue_url, struct Graph *graph);
+void parseText(htmlStruct *htmlInfo, HashTable *table_docID, HashTable *table_wordID, URLQueue *queue_url, struct Graph *graph);
 
 #endif

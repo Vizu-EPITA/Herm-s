@@ -12,8 +12,10 @@
 #include <err.h>
 #include <string.h>
 #include <wget.h>
+#include <pthread.h>
 
 int32_t docID_count = 0;
+int32_t wordID_count = 0;
 
 void *indexer(void *arg)
 {
@@ -23,27 +25,29 @@ void *indexer(void *arg)
 //	URLQueue *urlQueue;
 	int32_t file;
 	htmlStruct *htmlInfo;
-	int file_count = 0;
+	unsigned long file_count = 0;
 	while(1)
 	{
-		if(file_count > 3000)
+		if(file_count >= thr_data->limit)
 			break;
 		file = pop_file(thr_data->queue_file);
 		htmlInfo = decompress_file(file);
 
 		// TRAITEMENT
 		printf("INDEXER: indexing the url: %s\n", htmlInfo->url);
-		parseText(htmlInfo, thr_data->table_docID, thr_data->queue_url, thr_data->graph);
+		parseText(htmlInfo, thr_data->table_docID, thr_data->table_wordID, thr_data->queue_url, thr_data->graph);
 
 
 		free_htmlstruct(htmlInfo);
 		file_count++;
 	}
-	printGraph(thr_data->graph);
 	initRank(thr_data->graph);
 	rank(thr_data->graph, 20);
-	printRank(thr_data->graph);
-	return NULL;
+	saveGraph(thr_data->graph);
+	print_table(thr_data->table_docID);
+	//print_table(thr_data->table_wordID);
+	printf("==============================\nTOTAL OF %d UNIQUE LINKS FOUND\n==============================\n", docID_count);
+	pthread_exit(NULL);
 }
 
 void free_htmlstruct(htmlStruct *htmlInfo)
@@ -159,7 +163,7 @@ size_t parseLink(char *page, char *linkBuf)
     return len;
 }
 
-void parseText(htmlStruct *htmlInfo, HashTable *table_docID, URLQueue *queue_url, struct Graph *graph)
+void parseText(htmlStruct *htmlInfo, HashTable *table_docID, HashTable *table_wordID, URLQueue *queue_url, struct Graph *graph)
 {
 	char *page = htmlInfo->page;
 	wget_iri_t *base = wget_iri_parse(htmlInfo->url, NULL);
@@ -223,6 +227,11 @@ void parseText(htmlStruct *htmlInfo, HashTable *table_docID, URLQueue *queue_url
             wordLen = parseWord(page, wordBuf);
             //EDIT
             //printWord(wordBuf, wordLen);
+			if(ht_search(table_wordID, wordBuf) == -1)
+			{
+				wordID_count++;
+				ht_insert(table_wordID, wordBuf, wordID_count);
+			}
             page += wordLen;
         }
         else

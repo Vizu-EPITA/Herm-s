@@ -8,14 +8,19 @@
 #include <pthread.h>
 #include <err.h>
 
-int main()
+int main(int argc, char *argv[])
 {
+	if(argc != 2)
+		errx(EXIT_FAILURE, "wrong usage");
+	
 	thread_data *thr_data = malloc(sizeof(thread_data));
 	if(thr_data == NULL)
 		errx(EXIT_FAILURE, "Not enough memory!");
 
 	pthread_t thr_crawler;
 	pthread_t thr_indexer;
+
+	thr_data->limit = strtoul(argv[1], NULL, 10);
 
 	thr_data->table_docID = create_table(400);
 	thr_data->table_wordID = create_table(1000);
