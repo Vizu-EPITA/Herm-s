@@ -45,8 +45,14 @@ linked_list *get_word_list(char *query)
 	return list;
 }
 
-void search_query(char *query, HashTable *table_docId, HashTable *table_wordId, Graph *graph)
+void search_query(char *query, HashTable *table_docId, HashTable *table_wordId, HashTable *table_inverted, Graph *graph)
 {
 	linked_list *wordlist = get_word_list(query);
+	linked_list *iterator = wordlist->next;
+	while (iterator != NULL)
+	{
+		iterator->wordId = ht_search(table_wordId, iterator->word);
+		iterator = iterator->next;
+	}
 
 }
