@@ -8,13 +8,13 @@ void free_list(linked_list *list)
 	while (list != NULL)
 	{
 		list = list->next;
-		if (tmp->value != NULL) free(tmp->value);
+		if (tmp->word != NULL) free(tmp->word);
 		free(tmp);
 		tmp = list;
 	}
 }
 
-void push_list(linked_list *list, char *value)
+void push_list(linked_list *list, char *word)
 {
 	if (list == NULL) return;
 	while (list->next != NULL)
@@ -23,7 +23,8 @@ void push_list(linked_list *list, char *value)
 	}
 	linked_list *new_node = malloc(sizeof(linked_list));
 	if (new_node == NULL) errx(1, "linked_list.c: Could not create a new node to push");
-	new_node->value = value;
+	new_node->word = word;
+	new_node->wordId = -1;
 	new_node->next = NULL;
 	list->next = new_node;
 }

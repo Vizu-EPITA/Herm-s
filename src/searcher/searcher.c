@@ -4,7 +4,8 @@ linked_list *get_word_list(char *query)
 {
 	linked_list *list = malloc(sizeof(linked_list));
 	if (list == NULL) errx(1, "searcher.c: Could not create the wordlist");
-	list->value = NULL; // Header
+	list->word = NULL; // Header
+	list->wordId = -1;
 	linked_list *iterator = list;
 	size_t buffer_size = 100;
 	char *buffer = malloc(sizeof(char)*buffer_size);
@@ -19,13 +20,13 @@ linked_list *get_word_list(char *query)
 			if (iterator->next == NULL) errx(1, "searcher.c: Could not create the wordlist");
 			iterator = iterator->next;
 			iterator->next = NULL;
-			iterator->value = malloc(sizeof(char)*count+1);
-			if (iterator->value == NULL) errx(1, "searcher.c: Could not create the wordlist");
+			iterator->word = malloc(sizeof(char)*count+1);
+			if (iterator->word == NULL) errx(1, "searcher.c: Could not create the wordlist");
 			for (int j = 0; j < count; j++)
 			{
-				iterator->value[j] = buffer[j];
+				iterator->word[j] = buffer[j];
 			}
-			iterator->value[count] = 0;
+			iterator->word[count] = 0;
 			count = 0;
 		}
 		else
@@ -46,5 +47,6 @@ linked_list *get_word_list(char *query)
 
 void search_query(char *query, HashTable *table_docId, HashTable *table_wordId, Graph *graph)
 {
+	linked_list *wordlist = get_word_list(query);
 
 }
