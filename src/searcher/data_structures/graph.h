@@ -13,12 +13,12 @@ struct Node
     double pageRank;
 };
 
-struct Graph
+typedef struct Graph
 {
     int order;
     struct Node **nodes;
     int sizeNodesList;
-};
+} Graph;
 
 struct Node *newNode(int ID);
 
