@@ -1,5 +1,5 @@
-#ifndef HASH_TABLE_H
-#define HASH_TABLE_H
+#ifndef INVERTED_TABLE_H
+#define INVERTED_TABLE_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -17,13 +17,13 @@ typedef struct InvertedTable
 	uint32_t size;
 } InvertedTable;
 
-It_item* create_item();
+It_item* it_create_item();
 
-InvertedTable* create_table(uint32_t size);
+InvertedTable* it_create_table(uint32_t size);
 
-void free_item(Ht_item* item);
+void it_free_item(It_item* item);
 
-void free_table(InvertedTable* table);
+void it_free_table(InvertedTable* table);
 
 void it_insert(InvertedTable* table, uint32_t index, int32_t value);
 

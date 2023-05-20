@@ -1,4 +1,4 @@
-#include "inverted_index.h"
+#include "inverted_table.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -8,7 +8,7 @@
 #include <err.h>
 
 
-It_item* create_item()
+It_item* it_create_item()
 {
 	It_item* item = malloc(sizeof(It_item));
 	item->count = 0;
@@ -18,26 +18,26 @@ It_item* create_item()
 	return item;
 }
 
-InvertedTable* create_table(uint32_t size)
+InvertedTable* it_create_table(uint32_t size)
 {
 	InvertedTable* It = malloc(sizeof(InvertedTable));
 	It->size = size;
-	It->Items = malloc(sizeof(It_item *) * size);
+	It->items = malloc(sizeof(It_item *) * size);
 	for(uint32_t i = 0; i < size; i++)
 	{
-		It->items[i] = create_item();
+		It->items[i] = it_create_item();
 	}
 
 	return It;
 }
 
-void free_item(Ht_item* item)
+void it_free_item(It_item* item)
 {
-	free(item->value);
+	free(item->values);
 	free(item);
 }
 
-void free_table(HashTable* table)
+void it_free_table(InvertedTable* table)
 {
 	free(table->items);
 	free(table);
@@ -65,11 +65,11 @@ void it_insert(InvertedTable* table, uint32_t index, int32_t value)
 	{
 		uint32_t initialSize = table->size;
 		table->size = table->size * 2;
-		table->items = realloc(sizeof(It_item *) * table->size);
+		table->items = realloc(table->items, sizeof(It_item *) * table->size);
 
 		for(uint32_t i = initialSize; i < table->size; i++)
 		{
-			table->items[i] = create_item();	
+			table->items[i] = it_create_item();	
 		}
 
 		it_insert(table, index, value);
@@ -87,8 +87,8 @@ It_item* it_search(InvertedTable* table, uint32_t index)
 
 	item->size = table->items[index]->count;
 
-	item->values = malloc(sizeof(int32_t) * item->count);
-	memcpy(arr, table->items[index]->values, sizeof(int32_t) * item->count);
+	item->values = malloc(sizeof(int32_t) * item->size);
+	memcpy(item->values, table->items[index]->values, sizeof(int32_t) * item->size);
 
 	return item;
 }
