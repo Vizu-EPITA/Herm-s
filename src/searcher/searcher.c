@@ -29,9 +29,16 @@ linked_list *get_word_list(char *query)
 			iterator->word[count] = 0;
 			count = 0;
 		}
-		else
+		else if (query[i] != ' ')
 		{
-			buffer[count] = query[i];
+			if (query[i] >= 'A' && query[i] <= 'Z')
+			{
+				buffer[count] = query[i]+32;
+			}
+			else
+			{
+				buffer[count] = query[i];
+			}
 			count++;
 			if (count == buffer_size)
 			{
@@ -54,5 +61,4 @@ void search_query(char *query, HashTable *table_docId, HashTable *table_wordId, 
 		iterator->wordId = ht_search(table_wordId, iterator->word);
 		iterator = iterator->next;
 	}
-
 }
