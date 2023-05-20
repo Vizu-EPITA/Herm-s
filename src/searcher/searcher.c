@@ -106,7 +106,7 @@ double get_ten_rank(size_t *tenRankIndexArray, size_t index, int32_t *docIdArray
 	return max;
 }
 
-void search_query(char *query, HashTable *table_docId, HashTable *table_wordId, TYPE *INVERTED, Graph *graph)
+char **search_query(char *query, HashTable *table_docId, HashTable *table_wordId, TYPE *INVERTED, Graph *graph)
 {
 	LinkedList *wordlist = get_word_list(query);
 	LNode *iterator = wordlist->head->next;
@@ -176,10 +176,21 @@ void search_query(char *query, HashTable *table_docId, HashTable *table_wordId, 
 
 	//Get the top 10 biggest ranks
 	size_t *tenRankIndexArray = malloc(sizeof(size_t)*10);
-	if (tenRankArray == NULL) errx(1, "Could not allocate tenRankArray");
-	double formerMax = get_ten_rank(tenRankArray, 0, docIdArray, nbAdded, -1);
-	for (size_t i = 1; i < 10; i++)
+	if (tenRankIndexArray == NULL) errx(1, "Could not allocate tenRankArray");
+	double formerMax = get_ten_rank(tenRankIndexArray, 0, docIdArray, nbAdded, -1);
+	for (size_t i = 1; i < 10 && i < nbAdded; i++)
 	{
 		formerMax = get_ten_rank(tenRankIndexArray, i, docIdArray, nbAdded, formerMax);
 	}
+
+	//Retrieve the urls
+	char **urlArray = malloc(sizeof(char*)*10);
+	if (urlArray == NULL) errx(1, "COuld not allocate the urlArray");
+	for (size_t i = 0; i < 10 && i < nbAdded; i++)
+	{
+		urlArray[i] = ht_search(table_docId, docIdArray[tenRankIndexArray[i]]);
+	}
+
+	free(tenRankIndexArray);
+	return urlArray;
 }
