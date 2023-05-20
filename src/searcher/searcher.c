@@ -73,6 +73,39 @@ LinkedList *get_word_list(char *query)
 	return list;
 }
 
+double get_ten_rank(size_t *tenRankIndexArray, size_t index, int32_t *docIdArray, size_t nbAdded, double formerMax, Graph *graph)
+{
+	double temp = 0;
+	double max = 0;
+	size_t maxIndex = 0;
+	if (formerMax != -1)
+	{
+		for (size_t i = 0; i < nbAdded; i++)
+		{
+			temp = graph->nodes[i]->pageRank;
+			if (temp > max  && temp <= formerMax)
+			{
+				max = temp;
+				maxIndex = i;
+			}
+		}
+	}
+	else
+	{
+		for (size_t i = 0; i < nbAdded; i++)
+		{
+			temp = graph->nodes[i]->pageRank;
+			if (temp > max)
+			{
+				max = temp;
+				maxIndex = i;
+			}
+		}
+	}
+	tenRankIndexArray[index] = maxIndex;
+	return max;
+}
+
 void search_query(char *query, HashTable *table_docId, HashTable *table_wordId, TYPE *INVERTED, Graph *graph)
 {
 	LinkedList *wordlist = get_word_list(query);
@@ -100,27 +133,53 @@ void search_query(char *query, HashTable *table_docId, HashTable *table_wordId, 
 	{
 		structInvertedArray[i] = INVERTED_SESARCH(INVERTED, getElement(wordlist, i)->word);
 	}
-
 	STRUCT_INVERTED_TYPE firstStruct = structInvertedArray[0];
 	size_t fullSize = firstStruct->size;
 	int32_t docIdFullArray = firstStruct->array;
 	size_t nbAdded;
 	int32_t docIdArray[fullSize];
 	int32_t docId;
+	int found = 0;
 	//Iterate over the first table of docIds
 	for (int i = 0; i < fullSize; i++)
 	{
 		docId = docIdFullArray[i];
+		int j = 1;
 		//Iterate over the structs
-		for (int j = 1; j < nbWords; j++)
+		while (j < nbWords)
 		{
+			STRUCT_INVERTED_TYPE currentStruct = structInvertedArray[j];
+			found = 0;
+			int k = 0;
 			//Iterate over the arrays of the structs
-			for (int k = 0; k < structInvertedArray[j]->size)
+			while (k < currentStruct->size)
 			{
-
+				if (currentStruct->array[k] == docId)
+				{
+					found = 1;
+					break;
+				}
+				k++;
 			}
+			if (found == 0)
+			{
+				break;
+			}
+			j++;
+		}
+		if (j == nbWords)
+		{
+			docIdArray[nbAdded] = docId;
+			nbAdded++;
 		}
 	}
 
+	//Get the top 10 biggest ranks
+	size_t *tenRankIndexArray = malloc(sizeof(size_t)*10);
+	if (tenRankArray == NULL) errx(1, "Could not allocate tenRankArray");
+	double formerMax = get_ten_rank(tenRankArray, 0, docIdArray, nbAdded, -1);
+	for (size_t i = 1; i < 10; i++)
+	{
+		formerMax = get_ten_rank(tenRankIndexArray, i, docIdArray, nbAdded, formerMax);
+	}
 }
-//inverted -> struct array

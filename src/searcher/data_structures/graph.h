@@ -3,7 +3,7 @@
 
 struct Node
 {
-    int ID;
+    int32_t ID;
     struct Node **adjList;
     int nbAdj;
     int adjListSize;
@@ -20,7 +20,7 @@ typedef struct Graph
     int sizeNodesList;
 } Graph;
 
-struct Node *newNode(int ID);
+struct Node *newNode(int32_t ID);
 
 struct Graph *graphInit(int order);
 
@@ -28,7 +28,7 @@ void addNode(struct Graph *graph);
 
 void addEdge(struct Graph *graph, struct Node *src, struct Node *dest);
 
-struct Node *findOrCreateNode(struct Graph *graph, int docID);
+struct Node *findOrCreateNode(struct Graph *graph, int32_t docID);
 
 void freeGraph(struct Graph *graph);
 
