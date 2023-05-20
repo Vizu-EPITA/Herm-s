@@ -78,5 +78,17 @@ void it_insert(InvertedTable* table, uint32_t index, int32_t value)
 
 It_item* it_search(InvertedTable* table, uint32_t index)
 {
-}
+	if(table->size <= index)
+	{
+		return NULL;
+	}
+	
+	It_item* item = malloc(sizeof(It_item));
 
+	item->size = table->items[index]->count;
+
+	item->values = malloc(sizeof(int32_t) * item->count);
+	memcpy(arr, table->items[index]->values, sizeof(int32_t) * item->count);
+
+	return item;
+}
