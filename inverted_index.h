@@ -13,7 +13,7 @@ typedef struct It_item
 
 typedef struct InvertedTable
 {
-	Ht_item** items;
+	It_item** items;
 	uint32_t size;
 } InvertedTable;
 
@@ -25,8 +25,8 @@ void free_item(Ht_item* item);
 
 void free_table(InvertedTable* table);
 
-void ht_insert(InvertedTable* table, uint32_t index, int32_t value);
+void it_insert(InvertedTable* table, uint32_t index, int32_t value);
 
-It_item* ht_search(InvertedTable* table, uint32_t index);
+It_item* it_search(InvertedTable* table, uint32_t index);
 
 #endif

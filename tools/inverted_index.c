@@ -45,6 +45,35 @@ void free_table(HashTable* table)
 
 void it_insert(InvertedTable* table, uint32_t index, int32_t value)
 {
+	if(index < table->size)
+	{
+		if(table->items[index]->count < table->items[index]->size)
+		{
+			table->items[index]->values[table->items[index]->count] = value;
+			table->items[index]->count++;
+		}
+		else
+		{
+			table->items[index]->size = table->items[index]->size * 2;
+			table->items[index]->values = realloc(table->items[index]->values,
+				sizeof(int32_t) * table->items[index]->size);
+
+			it_insert(table, index, value);
+		}
+	}
+	else
+	{
+		uint32_t initialSize = table->size;
+		table->size = table->size * 2;
+		table->items = realloc(sizeof(It_item *) * table->size);
+
+		for(uint32_t i = initialSize; i < table->size; i++)
+		{
+			table->items[i] = create_item();	
+		}
+
+		it_insert(table, index, value);
+	}
 }
 
 It_item* it_search(InvertedTable* table, uint32_t index)
