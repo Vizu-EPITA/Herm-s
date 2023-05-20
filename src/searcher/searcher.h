@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-linked_list *get_word_list(char *query);
+LinkedList *get_word_list(char *query);
 
 void search_query(char *query, HashTable *table_docId, HashTable *table_wordId, HashTable *table_inverted,Graph *graph);
 #endif

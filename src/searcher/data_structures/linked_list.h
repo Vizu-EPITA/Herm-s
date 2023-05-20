@@ -1,14 +1,22 @@
 #ifndef LINKED_LIST
 #define LINKED_LIST
+#include <stddef.h>
 
-typedef struct linked_list {
-	char *word;
-	int wordId;
-	struct linked_list *next;
-} linked_list;
+// LNode structure
+typedef struct LNode {
+    char *word;
+	size_t wordId;
+    struct LNode* next;
+} LNode;
 
-void free_list(linked_list *list);
+// Linked list structure
+typedef struct {
+    LNode* head;
+} LinkedList;
 
-void push_list(linked_list *list, char *word);
+LNode *createNode();
+void addElement(LinkedList* list, char *word);
+LNode *getElement(LinkedList* list, int index);
+void freeList(LinkedList* list);
 
 #endif
