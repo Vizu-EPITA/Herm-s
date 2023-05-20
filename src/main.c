@@ -5,6 +5,7 @@
 #include "../tools/hash_table.h"
 #include "../include/crawler/crawler.h"
 #include "./searcher/data_structures/graph.h"
+#include "../tools/inverted_table.h"
 #include <pthread.h>
 #include <err.h>
 
@@ -24,6 +25,8 @@ int main(int argc, char *argv[])
 
 	thr_data->table_docID = create_table(400);
 	thr_data->table_wordID = create_table(1000);
+
+	thr_data->table_inverted = it_create_table(1000);
 
 	thr_data->queue_url = init_url_queue();
 	thr_data->queue_file = init_file_queue();
