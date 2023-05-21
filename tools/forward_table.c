@@ -8,7 +8,7 @@
 #include <err.h>
 
 
-InvertedTable* ft_create_table(uint32_t size)
+ForwardTable* ft_create_table(uint32_t size)
 {
 	ForwardTable* Ft = malloc(sizeof(ForwardTable));
 	Ft->size = size;
@@ -17,7 +17,7 @@ InvertedTable* ft_create_table(uint32_t size)
 	return Ft;
 }
 
-void ft_free_table(InvertedTable* table)
+void ft_free_table(ForwardTable* table)
 {
 	for(uint32_t i = 0; i < table->size; i++)
 	{
@@ -28,26 +28,25 @@ void ft_free_table(InvertedTable* table)
 	free(table);
 }
 
-void it_insert(InvertedTable* table, uint32_t index, char* url)
+void ft_insert(ForwardTable* table, uint32_t index, char* url)
 {
 	if(index < table->size)
 	{
 		char* heap_url = malloc(sizeof(char) * strlen(url) + 1);
 		memcpy(heap_url, url, sizeof(char) * strlen(url));
 		heap_url[strlen(url)] = 0;
-		table->urls[i] = heap_url;
+		table->urls[index] = heap_url;
 	}
 	else
 	{
-		uint32_t initialSize = table->size;
 		table->size = table->size * 2;
 		table->urls = realloc(table->urls, sizeof(char *) * table->size);
 
-		it_insert(table, index, value);
+		ft_insert(table, index, url);
 	}
 }
 
-char* it_search(InvertedTable* table, uint32_t index)
+char* ft_search(ForwardTable* table, uint32_t index)
 {
 	if(index >= table->size)
 	{
