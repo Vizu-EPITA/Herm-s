@@ -12,16 +12,19 @@ void button_clicked(GtkWidget *widget, gpointer data) {
     if (QUERY)
         g_free(QUERY);
     QUERY = g_strdup(text);
+	char *test = "This is an url";
 
     // Display the query in the text display field
     GtkWidget *text_view = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "text_view");
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
-    gtk_text_buffer_set_text(buffer, text, -1);
+    gtk_text_buffer_set_text(buffer, test, -1);
 }
 
-int main(int argc, char *argv[]) {
-    gtk_init(&argc, &argv);
+//int main(int argc, char *argv[]) {
+    //gtk_init(&argc, &argv);
 
+void GtkMain() {
+	gtk_init(0, NULL);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "Text Entry Example");
     gtk_window_set_default_size(GTK_WINDOW(window), 300, 200);
@@ -58,5 +61,11 @@ int main(int argc, char *argv[]) {
     if (QUERY)
         g_free(QUERY);
 
-    return 0;
+    //return 0;
+}
+
+int main()
+{
+	GtkMain();
+	return 0;
 }
