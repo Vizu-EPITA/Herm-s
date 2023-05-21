@@ -28,7 +28,7 @@ LinkedList *get_word_list(char *query)
 			iterator->word = malloc(sizeof(char)*(count+1));
 			if (iterator->word == NULL) errx(1, "searcher.c: Could not create the wordlist");
 
-			for (int j = 0; j < count; j++)
+			for (size_t j = 0; j < count; j++)
 			{
 				iterator->word[j] = buffer[j];
 			}
@@ -63,7 +63,7 @@ LinkedList *get_word_list(char *query)
 		iterator->word = malloc(sizeof(char)*(count+1));
 		if (iterator->word == NULL) errx(1, "searcher.c: Could not create the wordlist");
 
-		for (int j = 0; j < count; j++)
+		for (size_t j = 0; j < count; j++)
 		{
 			iterator->word[j] = buffer[j];
 		}
@@ -82,7 +82,7 @@ double get_ten_rank(int32_t *tenRankIndexArray, size_t index, int32_t *docIdArra
 	{
 		for (size_t i = 0; i < nbAdded; i++)
 		{
-			temp = graph->nodes[i]->pageRank;
+			temp = graph->nodes[docIdArray[i]]->pageRank;
 			if (temp > max  && temp <= formerMax)
 			{
 				max = temp;
@@ -94,7 +94,7 @@ double get_ten_rank(int32_t *tenRankIndexArray, size_t index, int32_t *docIdArra
 	{
 		for (size_t i = 0; i < nbAdded; i++)
 		{
-			temp = graph->nodes[i]->pageRank;
+			temp = graph->nodes[docIdArray[i]]->pageRank;
 			if (temp > max)
 			{
 				max = temp;
@@ -128,7 +128,7 @@ char **search_query(char *query, ForwardTable *forward, HashTable *table_wordId,
 
 	//Get all the docIds, not sorted yet
 	It_item *structInvertedArray[nbWords];
-	for (int i = 0; i < nbWords; i++)
+	for (size_t i = 0; i < nbWords; i++)
 	{
 		structInvertedArray[i] = it_search(inverted, getElement(wordlist, i)->wordId);
 	}
@@ -140,16 +140,16 @@ char **search_query(char *query, ForwardTable *forward, HashTable *table_wordId,
 	int32_t docId;
 	int found = 0;
 	//Iterate over the first table of docIds
-	for (int i = 0; i < fullSize; i++)
+	for (int32_t i = 0; i < fullSize; i++)
 	{
 		docId = docIdFullArray[i];
-		int j = 1;
+		size_t j = 1;
 		//Iterate over the structs
 		while (j < nbWords)
 		{
 			It_item *currentStruct = structInvertedArray[j];
 			found = 0;
-			int k = 0;
+			uint32_t k = 0;
 			//Iterate over the arrays of the structs
 			while (k < currentStruct->size)
 			{

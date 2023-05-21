@@ -22,7 +22,7 @@ void button_clicked(GtkWidget *widget, gpointer data)
         g_free(QUERY);
     QUERY = g_strdup(text);
 
-	char **urlsArray = search_query((char*)text, table_docId, table_wordId, table_inverted, graph);
+	char **urlsArray = search_query((char*)text, forward, table_wordId, table_inverted, graph);
 
     // Display the query in the text display field
     GtkWidget *text_view = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "text_view");
@@ -42,7 +42,7 @@ void button_clicked(GtkWidget *widget, gpointer data)
 //int main(int argc, char *argv[]) {
     //gtk_init(&argc, &argv);
 
-void GtkMain(ForwardTable *forward, HashTable *table_wordId, HashTable *table_inverted, Graph *graph)
+void GtkMain(ForwardTable *forward, HashTable *table_wordId, InvertedTable *table_inverted, Graph *graph)
 {
 	gtk_init(0, NULL);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
