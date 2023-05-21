@@ -73,7 +73,7 @@ LinkedList *get_word_list(char *query)
 	return list;
 }
 
-double get_ten_rank(size_t *tenRankIndexArray, size_t index, int32_t *docIdArray, size_t nbAdded, double formerMax, Graph *graph)
+double get_ten_rank(int32_t *tenRankIndexArray, size_t index, int32_t *docIdArray, size_t nbAdded, double formerMax, Graph *graph)
 {
 	double temp = 0;
 	double max = 0;
@@ -106,7 +106,7 @@ double get_ten_rank(size_t *tenRankIndexArray, size_t index, int32_t *docIdArray
 	return max;
 }
 
-char **search_query(char *query, HashTable *table_docId, HashTable *table_wordId, InvertedTable *inverted, Graph *graph)
+char **search_query(char *query, ForwardTable *forward, HashTable *table_wordId, InvertedTable *inverted, Graph *graph)
 {
 	LinkedList *wordlist = get_word_list(query);
 	LNode *iterator = wordlist->head->next;
@@ -188,7 +188,7 @@ char **search_query(char *query, HashTable *table_docId, HashTable *table_wordId
 	int32_t i = 0;
 	while (i < 10 && i < nbAdded)
 	{
-		urlArray[i] = ht_search(table_docId, docIdArray[tenRankIndexArray[i]]);
+		urlArray[i] = ft_search(forward, docIdArray[tenRankIndexArray[i]]);
 		i++;
 	}
 	while (i < 10)
