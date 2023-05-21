@@ -12,10 +12,10 @@ typedef struct ForwardTable
 
 ForwardTable* ft_create_table(uint32_t size);
 
-void it_free_table(ForwardTable* table);
+void ft_free_table(ForwardTable* table);
 
-void it_insert(ForwardTable* table, uint32_t index, char* url);
+void ft_insert(ForwardTable* table, uint32_t index, char* url);
 
-char* it_search(ForwardTable* table, uint32_t index);
+char* ft_search(ForwardTable* table, uint32_t index);
 
 #endif
