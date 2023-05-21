@@ -123,17 +123,16 @@ char **search_query(char *query, HashTable *table_docId, HashTable *table_wordId
 	//Query empty
 	if (nbWords == 0)
 	{
-		printf("Please search for at least one word\n");
-		return;
+		errx(1, "Query empty");
 	}
 
 	//Get all the docIds, not sorted yet
-	It_item structInvertedArray[count];
-	for (int i = 0; i < count; i++)
+	It_item *structInvertedArray[nbWords];
+	for (int i = 0; i < nbWords; i++)
 	{
-		structInvertedArray[i] = it_search(inverted, getElement(wordlist, i)->word);
+		structInvertedArray[i] = it_search(inverted, getElement(wordlist, i)->wordId);
 	}
-	It_item firstStruct = structInvertedArray[0];
+	It_item *firstStruct = structInvertedArray[0];
 	int32_t fullSize = firstStruct->size;
 	int32_t *docIdFullArray = firstStruct->values;
 	int32_t nbAdded;
@@ -148,7 +147,7 @@ char **search_query(char *query, HashTable *table_docId, HashTable *table_wordId
 		//Iterate over the structs
 		while (j < nbWords)
 		{
-			It_item currentStruct = structInvertedArray[j];
+			It_item *currentStruct = structInvertedArray[j];
 			found = 0;
 			int k = 0;
 			//Iterate over the arrays of the structs
@@ -177,10 +176,10 @@ char **search_query(char *query, HashTable *table_docId, HashTable *table_wordId
 	//Get the top 10 biggest ranks
 	int32_t *tenRankIndexArray = malloc(sizeof(int32_t)*10);
 	if (tenRankIndexArray == NULL) errx(1, "Could not allocate tenRankArray");
-	double formerMax = get_ten_rank(tenRankIndexArray, 0, docIdArray, nbAdded, -1);
+	double formerMax = get_ten_rank(tenRankIndexArray, 0, docIdArray, nbAdded, -1, graph);
 	for (int32_t i = 1; i < 10 && i < nbAdded; i++)
 	{
-		formerMax = get_ten_rank(tenRankIndexArray, i, docIdArray, nbAdded, formerMax);
+		formerMax = get_ten_rank(tenRankIndexArray, i, docIdArray, nbAdded, formerMax, graph);
 	}
 
 	//Retrieve the urls
@@ -194,7 +193,7 @@ char **search_query(char *query, HashTable *table_docId, HashTable *table_wordId
 	}
 	while (i < 10)
 	{
-		urlArray[i] = 0
+		urlArray[i] = 0;
 		i++;
 	}
 
