@@ -186,9 +186,16 @@ char **search_query(char *query, HashTable *table_docId, HashTable *table_wordId
 	//Retrieve the urls
 	char **urlArray = malloc(sizeof(char*)*10);
 	if (urlArray == NULL) errx(1, "COuld not allocate the urlArray");
-	for (int32_t i = 0; i < 10 && i < nbAdded; i++)
+	int32_t i = 0;
+	while (i < 10 && i < nbAdded)
 	{
 		urlArray[i] = ht_search(table_docId, docIdArray[tenRankIndexArray[i]]);
+		i++;
+	}
+	while (i < 10)
+	{
+		urlArray[i] = 0
+		i++;
 	}
 
 	free(tenRankIndexArray);
