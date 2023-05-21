@@ -6,7 +6,7 @@
 #include "graph.h"
 
 // Initializes a new node and returns it.
-struct Node* newNode(int ID)
+struct Node* newNode(int32_t ID)
 {
     struct Node* newNode = malloc(sizeof(struct Node));
     if (newNode == NULL)
@@ -116,7 +116,7 @@ void addEdge(struct Graph* graph, struct Node* src, struct Node* dest)
 // Return the node which contains the given docID. If it dont exists,
 // creates all the nodes with a docID inferior to his, creates the said node
 // and returns it.
-struct Node *findOrCreateNode(struct Graph *graph, int docID)
+struct Node *findOrCreateNode(struct Graph *graph, int32_t docID)
 {
     while (docID >= graph->order)
         // Create all the missing nodes
