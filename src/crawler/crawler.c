@@ -8,6 +8,7 @@
 #include <curl/curl.h>
 #include <stdio.h>
 #include <string.h>
+#include <pthread.h>
 
 int max_con = 200;
 
@@ -44,7 +45,7 @@ CURL *make_handle(char *url)
     // Important: use HTTP2 over HTTPS
     curl_easy_setopt(handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS);
     curl_easy_setopt(handle, CURLOPT_URL, url);
-    
+
     // Buffer body
     MemoryStruct *mem = malloc(sizeof(MemoryStruct));
     mem->size = 0;
@@ -63,6 +64,8 @@ CURL *make_handle(char *url)
 void *crawler(void* arg)
 {
 	thread_data *thr_data = (thread_data *) arg;
+
+	unsigned long file_count = 0;
 
 	int max_requests = 10;
 
@@ -85,6 +88,10 @@ void *crawler(void* arg)
 	int still_running = 1;
 	while(1)
 	{
+		if(file_count >= thr_data->limit)
+		{
+			break;
+		}
 		if(still_running == 0)
 		{
 			urlStruct = pop_url(thr_data->queue_url);
@@ -96,7 +103,7 @@ void *crawler(void* arg)
 			free_urlstruct(urlStruct);
 			still_running = 1;
 		}
-		
+
 		int numfds;
 		curl_multi_wait(multi_handle, NULL, 0, 1000, &numfds);
 		curl_multi_perform(multi_handle, &still_running);
@@ -121,9 +128,13 @@ void *crawler(void* arg)
 						// SAVE
 						//char filename[33];
 						//sprintf(filename, "%d", ht_search(thr_data->table_docID, url));
-						save(url, strlen(url), mem->buf, mem->size, ht_search(thr_data->table_docID, url));
-						add_file(thr_data->queue_file, ht_search(thr_data->table_docID, url));
-
+						int32_t docID = ht_search(thr_data->table_docID, url);
+						if (docID != -1)
+						{
+							save(url, strlen(url), mem->buf, mem->size, docID);
+							add_file(thr_data->queue_file, docID);
+							file_count++;
+						}
 						char *ctype;
 						curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &ctype);
 						printf("CRAWLER: [%d] HTTP 200 (%s): %s\n", complete, ctype, url);
@@ -161,4 +172,5 @@ void *crawler(void* arg)
 		}
 	}
 	curl_multi_cleanup(multi_handle);
+	pthread_exit(NULL);
 }

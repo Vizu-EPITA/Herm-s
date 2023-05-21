@@ -7,10 +7,12 @@
 
 typedef struct thread_data
 {
+	unsigned long limit;
 	HashTable *table_docID;
 	HashTable *table_wordID;
 	URLQueue *queue_url;
 	FileQueue *queue_file;
+	struct Graph *graph;
 } thread_data;
 
 #endif

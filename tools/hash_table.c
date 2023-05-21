@@ -24,7 +24,7 @@ uint32_t Jenkins_one_at_a_time_hash(const char* key, size_t len)
 	return hash;
 }
 
-Ht_item* create_item(char* key, int32_t value)
+Ht_item* create_item(const char* key, int32_t value)
 {
 	// Creates a pointer to a new HashTable item.
 	Ht_item* item = (Ht_item*) malloc(sizeof(Ht_item));
@@ -85,13 +85,13 @@ void free_table(HashTable* table)
 	free(table);
 }
 
-void ht_insert(HashTable* table, char* key, int32_t value)
+void ht_insert(HashTable* table, const char* key, int32_t value)
 {
 	// Creates the item.
 	Ht_item* item = create_item(key, value);
 	
 	// Computes the index.
-	int32_t index = Jenkins_one_at_a_time_hash(key, strlen(key)) % table->size;
+	uint32_t index = Jenkins_one_at_a_time_hash(key, strlen(key)) % table->size;
 
 	Ht_item* current_item = table->items[index];
 
@@ -112,7 +112,7 @@ void ht_insert(HashTable* table, char* key, int32_t value)
 	}
 }
 
-int32_t ht_search(HashTable* table, char* key)
+int32_t ht_search(HashTable* table, const char* key)
 {
 	// Searches for the key in the HashTable.
 	// Returns NULL if it doesn't exist.
