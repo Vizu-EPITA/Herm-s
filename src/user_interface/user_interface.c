@@ -1,11 +1,19 @@
-#include <gtk/gtk.h>
-#include "../searcher/searcher.h"
+#include "./user_interface.h"
 
 // Global variable to store the query text
 char *QUERY = NULL;
 
 // Callback function for the button click event
-void button_clicked(GtkWidget *widget, gpointer data) {
+void button_clicked(GtkWidget *widget, gpointer data)
+{
+
+	ButtonClickedData *buttonData = (ButtonClickedData *)data;
+    HashTable *table_docId = buttonData->table_docId;
+    HashTable *table_wordId = buttonData->table_wordId;
+    HashTable *table_inverted = buttonData->table_inverted;
+    Graph *graph = buttonData->graph;
+    //GtkWidget *entry = buttonData->entry;
+
     GtkWidget *entry = (GtkWidget *)data;
     const char *text = gtk_entry_get_text(GTK_ENTRY(entry));
 
@@ -14,7 +22,7 @@ void button_clicked(GtkWidget *widget, gpointer data) {
         g_free(QUERY);
     QUERY = g_strdup(text);
 
-	char **urlsArray = search_query(text, );
+	char **urlsArray = search_query((char*)text, table_docId, table_wordId, table_inverted, graph);
 
     // Display the query in the text display field
     GtkWidget *text_view = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "text_view");
@@ -34,7 +42,8 @@ void button_clicked(GtkWidget *widget, gpointer data) {
 //int main(int argc, char *argv[]) {
     //gtk_init(&argc, &argv);
 
-void GtkMain() {
+void GtkMain(HashTable *table_docId, HashTable *table_wordId, HashTable *table_inverted, Graph *graph)
+{
 	gtk_init(0, NULL);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "Text Entry Example");
@@ -52,9 +61,16 @@ void GtkMain() {
     GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
+    ButtonClickedData buttonData;
+    buttonData.table_docId = table_docId;
+    buttonData.table_wordId = table_wordId;
+    buttonData.table_inverted = table_inverted;
+    buttonData.graph = graph;
+    //buttonData.entry = entry;
+
     // Button
     GtkWidget *button = gtk_button_new_with_label("Save");
-    g_signal_connect(button, "clicked", G_CALLBACK(button_clicked), entry);
+    g_signal_connect(button, "clicked", G_CALLBACK(button_clicked), &buttonData);
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
 
     // Text display field
@@ -75,8 +91,8 @@ void GtkMain() {
     //return 0;
 }
 
-int main()
-{
-	GtkMain();
-	return 0;
-}
+//int main()
+//{
+//	GtkMain();
+//	return 0;
+//}
