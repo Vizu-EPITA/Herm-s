@@ -8,9 +8,9 @@ void button_clicked(GtkWidget *widget, gpointer data)
 {
 
 	ButtonClickedData *buttonData = (ButtonClickedData *)data;
-    HashTable *table_docId = buttonData->table_docId;
+    ForwardTable *forward = buttonData->forward;
     HashTable *table_wordId = buttonData->table_wordId;
-    HashTable *table_inverted = buttonData->table_inverted;
+    InvertedTable *table_inverted = buttonData->table_inverted;
     Graph *graph = buttonData->graph;
     //GtkWidget *entry = buttonData->entry;
 
@@ -42,7 +42,7 @@ void button_clicked(GtkWidget *widget, gpointer data)
 //int main(int argc, char *argv[]) {
     //gtk_init(&argc, &argv);
 
-void GtkMain(HashTable *table_docId, HashTable *table_wordId, HashTable *table_inverted, Graph *graph)
+void GtkMain(ForwardTable *forward, HashTable *table_wordId, HashTable *table_inverted, Graph *graph)
 {
 	gtk_init(0, NULL);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -62,7 +62,7 @@ void GtkMain(HashTable *table_docId, HashTable *table_wordId, HashTable *table_i
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
     ButtonClickedData buttonData;
-    buttonData.table_docId = table_docId;
+    buttonData.forward = forward;
     buttonData.table_wordId = table_wordId;
     buttonData.table_inverted = table_inverted;
     buttonData.graph = graph;
