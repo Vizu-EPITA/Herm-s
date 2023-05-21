@@ -4,7 +4,7 @@
 #include "../include/indexer/indexer.h"
 #include "../tools/hash_table.h"
 #include "../include/crawler/crawler.h"
-#include "./searcher/data_structures/graph.h"
+#include "../tools/graph.h"
 #include "../tools/inverted_table.h"
 #include <pthread.h>
 #include <err.h>
@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 {
 	if(argc != 2)
 		errx(EXIT_FAILURE, "wrong usage");
-	
+
 	thread_data *thr_data = malloc(sizeof(thread_data));
 	if(thr_data == NULL)
 		errx(EXIT_FAILURE, "Not enough memory!");
