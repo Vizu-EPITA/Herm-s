@@ -18,4 +18,8 @@ void ft_insert(ForwardTable* table, uint32_t index, char* url);
 
 char* ft_search(ForwardTable* table, uint32_t index);
 
+void ft_save(ForwardTable* table, char* path)
+
+ForwardTable* ft_load(char* path)
+
 #endif
