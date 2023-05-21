@@ -10,9 +10,9 @@
 #include <pthread.h>
 #include <err.h>
 
-int main(int argc, char *argv[])
+int main()//int argc, char *argv[])
 {
-	if(argc != 2)
+	/*if(argc != 2)
 		errx(EXIT_FAILURE, "wrong usage");
 
 	thread_data *thr_data = malloc(sizeof(thread_data));
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 	pthread_create(&thr_indexer, NULL, indexer, (void *)thr_data);
 
 	ht_insert(thr_data->table_docID,"https://en.wikipedia.org/wiki/Main_Page", 0);
-	/*
+
    	ht_insert(thr_data->table_docID,"https://en.wikipedia.org/wiki/Mathematics", 1);
    	ht_insert(thr_data->table_docID,"https://en.wikipedia.org/wiki/Physics", 2);
     ht_insert(thr_data->table_docID,"https://en.wikipedia.org/wiki/Elementary_particle", 3);
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 	*/
 
 
-	add_url(thr_data->queue_url, "https://en.wikipedia.org/wiki/Main_Page");
+	//add_url(thr_data->queue_url, "https://en.wikipedia.org/wiki/Main_Page");
 	/*
 	add_url(thr_data->queue_url, "https://en.wikipedia.org/wiki/Mathematics");
 	add_url(thr_data->queue_url, "https://en.wikipedia.org/wiki/Physics");
@@ -126,5 +126,8 @@ int main(int argc, char *argv[])
 	add_url(thr_data->queue_url, "https://en.wikipedia.org/wiki/Steam_engine");
 	*/
 
-	pthread_exit(NULL);
+	//pthread_exit(NULL);
+
+	printf("yay\n");
+	return 0;
 }
