@@ -6,6 +6,7 @@
 #include "../include/crawler/crawler.h"
 #include "../tools/graph.h"
 #include "../tools/inverted_table.h"
+#include "../tools/forward_table.h"
 #include <pthread.h>
 #include <err.h>
 
@@ -25,6 +26,8 @@ int main(int argc, char *argv[])
 
 	thr_data->table_docID = create_table(400);
 	thr_data->table_wordID = create_table(1000);
+
+	thr_data->ftable_docID = ft_create_table(1000);
 
 	thr_data->table_inverted = it_create_table(1000);
 
