@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "../../src/searcher/data_structures/graph.h"
+#include "../../tools/graph.h"
 
 typedef struct htmlStruct
 {

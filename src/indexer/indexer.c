@@ -4,8 +4,8 @@
 #include "../../include/crawler/url_server.h"
 #include "../../include/crawler/repository.h"
 #include "../../tools/hash_table.h"
-#include "../searcher/data_structures/graph.h"
-#include "../searcher/pagerank.h"
+#include "../../tools/graph.h"
+#include "../../include/searcher/pagerank.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <zlib.h>

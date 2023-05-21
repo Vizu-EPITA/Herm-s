@@ -2,9 +2,8 @@
 #define SEARCHER
 
 #include "../../tools/hash_table.h"
-#include "./data_structures/graph.h"
-#include "./data_structures/shared_queue.h"
-#include "./data_structures/linked_list.h"
+#include "../../tools/graph.h"
+#include "../../tools/linked_list.h"
 #include <err.h>
 #include <pthread.h>
 #include <stdio.h>

@@ -1,4 +1,4 @@
-#include "searcher.h"
+#include "../../include/searcher/searcher.h"
 
 LinkedList *get_word_list(char *query)
 {

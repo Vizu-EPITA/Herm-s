@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <err.h>
-#include "data_structures/graph.h"
+#include "../../tools/graph.h"
+#include "../../include/searcher/pagerank.h"
 
 //Initializes the pagerank with 1/order for all nodes
 //HAS TO USE FLOATS

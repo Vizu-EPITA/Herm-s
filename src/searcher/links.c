@@ -2,7 +2,7 @@
 #include <fcntl.h>
 #include <err.h>
 #include <stdio.h>
-#include "data_structures/graph.h"
+#include "../../tools/graph.h"
 
 int main()
 {
