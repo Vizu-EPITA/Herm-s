@@ -1,50 +1,62 @@
 #include <gtk/gtk.h>
 
-// Global variables
-char *query = NULL;
+// Global variable to store the query text
+char *QUERY = NULL;
 
 // Callback function for the button click event
-void save_text(GtkButton *button, gpointer data)
-{
-    GtkWidget *text_entry = (GtkWidget *)data;
-    const gchar *entry_text = gtk_entry_get_text(GTK_ENTRY(text_entry));
-    query = strdup(entry_text);
-	//SEARCH
+void button_clicked(GtkWidget *widget, gpointer data) {
+    GtkWidget *entry = (GtkWidget *)data;
+    const char *text = gtk_entry_get_text(GTK_ENTRY(entry));
 
-    //g_print("Text saved: %s\n", query);
+    // Save the query text
+    if (QUERY)
+        g_free(QUERY);
+    QUERY = g_strdup(text);
+
+    // Display the query in the text display field
+    GtkWidget *text_view = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "text_view");
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
+    gtk_text_buffer_set_text(buffer, text, -1);
 }
 
-int main(int argc, char *argv[])
-{
-    // Initialize GTK
+int main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 
-    // Create the main window
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), "Fantastic Search Engine");
-    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-    gtk_widget_set_size_request(window, 300, 200);
+    gtk_window_set_title(GTK_WINDOW(window), "Text Entry Example");
+    gtk_window_set_default_size(GTK_WINDOW(window), 300, 200);
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
-    // Create a vertical box container
     GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
     gtk_container_add(GTK_CONTAINER(window), vbox);
 
-    // Create a text entry field
-    GtkWidget *text_entry = gtk_entry_new();
-    gtk_entry_set_placeholder_text(GTK_ENTRY(text_entry), "Enter text here");
-    gtk_box_pack_start(GTK_BOX(vbox), text_entry, FALSE, FALSE, 0);
+    // Text field
+    GtkWidget *entry = gtk_entry_new();
+    gtk_box_pack_start(GTK_BOX(vbox), entry, FALSE, FALSE, 0);
 
-    // Create a button
-    GtkWidget *button = gtk_button_new_with_label("Search");
-    g_signal_connect(button, "clicked", G_CALLBACK(save_text), text_entry);
-    gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 0);
+    // Horizontal box for the button and display field
+    GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
-    // Create a label to display the saved text
-    GtkWidget *label = gtk_label_new(NULL);
-    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
+    // Button
+    GtkWidget *button = gtk_button_new_with_label("Save");
+    g_signal_connect(button, "clicked", G_CALLBACK(button_clicked), entry);
+    gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
 
-    // Update the label with the saved text
-    gtk_label_set_text(GTK_LABEL(label), text ? text : "");
+    // Text display field
+    GtkWidget *text_view = gtk_text_view_new();
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(text_view), FALSE);
+    gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(text_view), FALSE);
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_view), GTK_WRAP_WORD);
+    gtk_box_pack_start(GTK_BOX(vbox), text_view, TRUE, TRUE, 0);
+    g_object_set_data(G_OBJECT(button), "text_view", text_view);
 
-    // Show all widgets
+    gtk_widget_show_all(window);
+    gtk_main();
+
+    // Cleanup
+    if (QUERY)
+        g_free(QUERY);
+
+    return 0;
+}
