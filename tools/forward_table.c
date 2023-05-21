@@ -128,6 +128,7 @@ ForwardTable* ft_load(char* path)
 			if(Ft->urls[i] == NULL):
 				errx(EXIT_FAILURE, "Not enough memory !");
 			fread(Ft->urls[i], sizeof(char), size, fp);
+			Ft->urls[i][size] = 0;
 		}
 	}
 
