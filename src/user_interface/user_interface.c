@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include "../searcher/searcher.h"
 
 // Global variable to store the query text
 char *QUERY = NULL;
@@ -12,12 +13,22 @@ void button_clicked(GtkWidget *widget, gpointer data) {
     if (QUERY)
         g_free(QUERY);
     QUERY = g_strdup(text);
-	char *test = "This is an url";
+
+	char **urlsArray = search_query(text, );
 
     // Display the query in the text display field
     GtkWidget *text_view = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "text_view");
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
-    gtk_text_buffer_set_text(buffer, test, -1);
+
+    GtkTextIter end_iter;
+    gtk_text_buffer_get_end_iter(buffer, &end_iter);
+
+	for (int i = 0; i < 10; i++)
+	{
+    	gtk_text_buffer_insert(buffer, &end_iter, urlsArray[i], -1);
+    	gtk_text_buffer_insert(buffer, &end_iter, "\n", -1);
+	}
+	free(urlsArray);
 }
 
 //int main(int argc, char *argv[]) {
