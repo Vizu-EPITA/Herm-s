@@ -5,8 +5,6 @@
 #include "../tools/hash_table.h"
 #include "../include/crawler/crawler.h"
 #include "../tools/graph.h"
-#include "../tools/inverted_table.h"
-#include "../tools/forward_table.h"
 #include <pthread.h>
 #include <err.h>
 
