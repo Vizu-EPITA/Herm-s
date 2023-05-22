@@ -8,7 +8,7 @@
 #include "../tools/graph.h"
 #include <pthread.h>
 #include <err.h>
-
+/*
 int main(int argc, char *argv[])
 {
 	if(argc != 2)
@@ -43,8 +43,7 @@ int main(int argc, char *argv[])
 
 	pthread_exit(NULL);
 }
-
-/*
+*/
 int main()
 {
 
@@ -55,4 +54,3 @@ int main()
 	GtkMain(forward, table_wordId, table_inverted, graph);
 	return 0;
 }
-*/

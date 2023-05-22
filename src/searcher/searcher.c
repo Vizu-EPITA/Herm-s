@@ -109,15 +109,33 @@ double get_ten_rank(int32_t *tenRankIndexArray, size_t index, int32_t *docIdArra
 char **search_query(char *query, ForwardTable *forward, HashTable *table_wordId, InvertedTable *inverted, Graph *graph)
 {
 	LinkedList *wordlist = get_word_list(query);
-	LNode *iterator = wordlist->head->next;
+	LNode *iterator = wordlist->head;
+
+	// TO DELETE
+	LNode *iterator2 = wordlist->head->next;
+	while (iterator2 != NULL)
+	{
+		printf("%s\n", iterator2->word);
+		iterator2 = iterator2->next;
+	}
+
 	size_t nbWords = 0;
 
 	//Get all the word IDs and count the number of words
-	while (iterator != NULL)
+	while (iterator->next != NULL)
 	{
-		nbWords ++;
-		iterator->wordId = ht_search(table_wordId, iterator->word);
-		iterator = iterator->next;
+		int32_t wordId = ht_search(table_wordId, iterator->next->word);
+		printf("%i\n", wordId);
+		if (wordId == -1)
+		{
+			iterator->next = iterator->next->next;
+		}
+		else
+		{
+			nbWords ++;
+			iterator->next->wordId = wordId;
+			iterator = iterator->next;
+		}
 	}
 
 	//Query empty

@@ -146,8 +146,15 @@ size_t parseWord(char *page, char *wordBuf /*,[HTBLE]*/)
           (*page >= 'A' && *page <= 'Z') ||
           (*page >= 'a' && *page <= 'z')))
     {
-        *wordBuf = *page;
-        wordBuf++;
+		if (*page >= 'A' &&  *page <= 'Z')
+		{
+			*wordBuf = *page + 32;
+		}
+		else
+		{
+        	*wordBuf = *page;
+		}
+		wordBuf++;
         page++;
         len++;
     }

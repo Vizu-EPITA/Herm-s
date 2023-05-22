@@ -12,9 +12,9 @@ void button_clicked(GtkWidget *widget, gpointer data)
     HashTable *table_wordId = buttonData->table_wordId;
     InvertedTable *table_inverted = buttonData->table_inverted;
     Graph *graph = buttonData->graph;
-    //GtkWidget *entry = buttonData->entry;
+    GtkWidget *entry = buttonData->entry;
 
-    GtkWidget *entry = (GtkWidget *)data;
+    //GtkWidget *entry = (GtkWidget *)data;
     const char *text = gtk_entry_get_text(GTK_ENTRY(entry));
 
     // Save the query text
@@ -66,7 +66,7 @@ void GtkMain(ForwardTable *forward, HashTable *table_wordId, InvertedTable *tabl
     buttonData.table_wordId = table_wordId;
     buttonData.table_inverted = table_inverted;
     buttonData.graph = graph;
-    //buttonData.entry = entry;
+    buttonData.entry = entry;
 
     // Button
     GtkWidget *button = gtk_button_new_with_label("Save");

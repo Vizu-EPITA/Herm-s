@@ -9,7 +9,7 @@ typedef struct {
     HashTable *table_wordId;
     InvertedTable *table_inverted;
     Graph *graph;
-    //GtkWidget *entry;
+    GtkWidget *entry;
 } ButtonClickedData;
 
 void button_clicked(GtkWidget *widget, gpointer data);

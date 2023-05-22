@@ -1,11 +1,11 @@
 #ifndef LINKED_LIST
 #define LINKED_LIST
 #include <stddef.h>
-
+#include <stdint.h>
 // LNode structure
 typedef struct LNode {
     char *word;
-	size_t wordId;
+	int32_t wordId;
     struct LNode* next;
 } LNode;
 
