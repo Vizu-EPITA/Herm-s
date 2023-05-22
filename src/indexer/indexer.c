@@ -44,7 +44,7 @@ void *indexer(void *arg)
 	initRank(thr_data->graph);
 	rank(thr_data->graph, 20);
 	saveGraph(thr_data->graph);
-	save_table(thr_data->table_docID, ".docidsave");
+	save_table(thr_data->table_docID, "./docidsave");
 	save_table(thr_data->table_wordID, "./wordidsave");
 	ft_save(thr_data->ftable_docID, "./forwardsave");
 	it_save(thr_data->table_inverted, "./invertedsave");

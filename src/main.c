@@ -2,6 +2,7 @@
 #include "../include/crawler/url_server.h"
 #include "../include/crawler/repository.h"
 #include "../include/indexer/indexer.h"
+#include "../include/user_interface/user_interface.h"
 #include "../tools/hash_table.h"
 #include "../include/crawler/crawler.h"
 #include "../tools/graph.h"
@@ -42,3 +43,16 @@ int main(int argc, char *argv[])
 
 	pthread_exit(NULL);
 }
+
+/*
+int main()
+{
+
+	Graph *graph = loadGraph("./graphsave.txt");
+	InvertedTable *table_inverted = it_load("./invertedsave");
+	ForwardTable *forward = ft_load("./forwardsave");
+	HashTable *table_wordId = load_table("./wordidsave");
+	GtkMain(forward, table_wordId, table_inverted, graph);
+	return 0;
+}
+*/
