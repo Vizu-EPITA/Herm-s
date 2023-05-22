@@ -8,7 +8,7 @@
 #include "../tools/graph.h"
 #include <pthread.h>
 #include <err.h>
-/*
+/*:w
 int main(int argc, char *argv[])
 {
 	if(argc != 2)
@@ -44,6 +44,8 @@ int main(int argc, char *argv[])
 	pthread_exit(NULL);
 }
 */
+
+
 int main()
 {
 

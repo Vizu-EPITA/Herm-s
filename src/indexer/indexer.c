@@ -239,13 +239,22 @@ void parseText(htmlStruct *htmlInfo, HashTable *table_docID, HashTable *table_wo
             wordLen = parseWord(page, wordBuf);
             //EDIT
             //printWord(wordBuf, wordLen);
-			if(ht_search(table_wordID, wordBuf) == -1)
+			if(wordLen <=30)
 			{
-				wordID_count++;
-				ht_insert(table_wordID, wordBuf, wordID_count);
+                 char* wordTEST = malloc(sizeof(char) * wordLen + 1);
+                 strncpy(wordTEST, wordBuf, wordLen);
+                 wordTEST[wordLen] = 0;
+
+                 if(ht_search(table_wordID, wordTEST) == -1)
+                 {
+                     wordID_count++;
+                     ht_insert(table_wordID, wordTEST, wordID_count);
+                 }
+                 it_insert(table_inverted, ht_search(table_wordID, wordTEST), htmlInfo->docid);
+
+                 free(wordTEST);
 			}
-			it_insert(table_inverted, ht_search(table_wordID, wordBuf), htmlInfo->docid);
-            page += wordLen;
+			page += wordLen;
         }
         else
             page++;
