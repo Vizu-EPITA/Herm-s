@@ -37,5 +37,8 @@ int main(int argc, char *argv[])
 	pthread_create(&thr_crawler, NULL, crawler, (void *)thr_data);
 	pthread_create(&thr_indexer, NULL, indexer, (void *)thr_data);
 
+	ht_insert(thr_data->table_docID,"https://en.wikipedia.org/wiki/Main_Page", 0);
+	add_url(thr_data->queue_url, "https://en.wikipedia.org/wiki/Main_Page");
+
 	pthread_exit(NULL);
 }

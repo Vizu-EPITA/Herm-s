@@ -44,6 +44,10 @@ void *indexer(void *arg)
 	initRank(thr_data->graph);
 	rank(thr_data->graph, 20);
 	saveGraph(thr_data->graph);
+	save_table(thr_data->table_docID, ".docidsave");
+	save_table(thr_data->table_wordID, "./wordidsave");
+	ft_save(thr_data->ftable_docID, "./forwardsave");
+	it_save(thr_data->table_inverted, "./invertedsave");
 	print_table(thr_data->table_docID);
 	//print_table(thr_data->table_wordID);
 	printf("==============================\nTOTAL OF %d UNIQUE LINKS FOUND\n==============================\n", docID_count);
@@ -233,7 +237,7 @@ void parseText(htmlStruct *htmlInfo, HashTable *table_docID, HashTable *table_wo
 				wordID_count++;
 				ht_insert(table_wordID, wordBuf, wordID_count);
 			}
-			it_insert(table_inverted, ht_search(table_wordID, wordBuf), htmlInfo->docid); 
+			it_insert(table_inverted, ht_search(table_wordID, wordBuf), htmlInfo->docid);
             page += wordLen;
         }
         else
