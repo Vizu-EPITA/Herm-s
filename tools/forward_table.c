@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <err.h>
+#include <errno.h>
 
 
 ForwardTable* ft_create_table(uint32_t size)
@@ -115,7 +116,7 @@ ForwardTable* ft_load(char* path)
 	Ft->urls = malloc(sizeof(char *) * Ft->size);
 
 	uint32_t size = 0;
-	for(uint32_t i = 0; i < table->size; i++)
+	for(uint32_t i = 0; i < Ft->size; i++)
 	{
 		fread(&size, sizeof(uint32_t), 1, fp);
 		if(size == 0)
@@ -125,14 +126,14 @@ ForwardTable* ft_load(char* path)
 		else
 		{
 			Ft->urls[i] = malloc(sizeof(char) * size + 1);
-			if(Ft->urls[i] == NULL):
+			if(Ft->urls[i] == NULL)
 				errx(EXIT_FAILURE, "Not enough memory !");
 			fread(Ft->urls[i], sizeof(char), size, fp);
 			Ft->urls[i][size] = 0;
 		}
 	}
 
-	close(fp);
+	fclose(fp);
 
 	return Ft;
 }

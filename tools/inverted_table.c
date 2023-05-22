@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <err.h>
+#include <errno.h>
 
 
 It_item* it_create_item()
@@ -99,7 +100,7 @@ void it_save(InvertedTable* table, char* path)
 	if(fp == NULL)
 	{
 		printf("opening file failed: %s\n", strerror(errno));
-		errx(EXIT_FAILURE, "INDEXER: failed to open the file");
+		errx(EXIT_FAILURE, "InvertedTable Save: failed to open the file");
 	}
 
 	fwrite(&table->size, sizeof(uint32_t), 1, fp);
@@ -118,21 +119,21 @@ InvertedTable* it_load(char* path)
 	if(fp == NULL)
 	{
 		printf("opening file failed: %s\n", strerror(errno));
-		errx(EXIT_FAILURE, "INDEXER: failed to open the file");
+		errx(EXIT_FAILURE, "InvertedTable Load: failed to open the file");
 	}
 
 	InvertedTable *it = malloc(sizeof(InvertedTable));
-	if(it == NULL):
+	if(it == NULL)
 		errx(EXIT_FAILURE, "Not enough memory");
 
 	fread(&it->size, sizeof(uint32_t), 1, fp);
-	it->items = malloc(sizeof(It_items *) * it->size);
-	if(it->items == NULL):
+	it->items = malloc(sizeof(It_item *) * it->size);
+	if(it->items == NULL)
 		errx(EXIT_FAILURE, "Not enough memory");
 	for(uint32_t i = 0; i < it->size; i++)
 	{
 		it->items[i] = malloc(sizeof(It_item));
-		if(it->items[i] == NULL):
+		if(it->items[i] == NULL)
 			errx(EXIT_FAILURE, "Not enough memory");
 
 		fread(&it->items[i]->count, sizeof(uint32_t), 1, fp);
@@ -140,14 +141,14 @@ InvertedTable* it_load(char* path)
 		if(it->items[i]->count != 0)
 		{
 			it->items[i]->values = malloc(sizeof(int32_t) * it->items[i]->count);
-			if(it->items[i]->values == NULL):
+			if(it->items[i]->values == NULL)
 				errx(EXIT_FAILURE, "Not enough memory");
 			it->items[i]->size = it->items[i]->count;
 		}
 		else
 		{
 			it->items[i]->values = malloc(sizeof(int32_t) * 50);
-			if(it->items[i]->values == NULL):
+			if(it->items[i]->values == NULL)
 				errx(EXIT_FAILURE, "Not enough memory");
 			it->items[i]->size = 50;
 		}
