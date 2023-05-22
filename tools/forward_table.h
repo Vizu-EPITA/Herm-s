@@ -14,7 +14,7 @@ ForwardTable* ft_create_table(uint32_t size);
 
 void ft_free_table(ForwardTable* table);
 
-void ft_insert(ForwardTable* table, uint32_t index, char* url);
+void ft_insert(ForwardTable* table, uint32_t index, const char* url);
 
 char* ft_search(ForwardTable* table, uint32_t index);
 

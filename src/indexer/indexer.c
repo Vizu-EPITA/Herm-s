@@ -35,7 +35,7 @@ void *indexer(void *arg)
 
 		// TRAITEMENT
 		printf("INDEXER: indexing the url: %s\n", htmlInfo->url);
-		parseText(htmlInfo, thr_data->table_docID, thr_data->table_wordID, thr_data->queue_url, thr_data->graph);
+		parseText(htmlInfo, thr_data->table_docID, thr_data->table_wordID, thr_data->queue_url, thr_data->graph, thr_data->table_inverted, thr_data->ftable_docID);
 
 
 		free_htmlstruct(htmlInfo);
@@ -163,7 +163,7 @@ size_t parseLink(char *page, char *linkBuf)
     return len;
 }
 
-void parseText(htmlStruct *htmlInfo, HashTable *table_docID, HashTable *table_wordID, URLQueue *queue_url, struct Graph *graph)
+void parseText(htmlStruct *htmlInfo, HashTable *table_docID, HashTable *table_wordID, URLQueue *queue_url, struct Graph *graph, InvertedTable *table_inverted, ForwardTable *ftable_docID)
 {
 	char *page = htmlInfo->page;
 	wget_iri_t *base = wget_iri_parse(htmlInfo->url, NULL);
@@ -206,6 +206,7 @@ void parseText(htmlStruct *htmlInfo, HashTable *table_docID, HashTable *table_wo
 							{
 								docID_count++;
 								ht_insert(table_docID, absurl, docID_count);
+								ft_insert(ftable_docID, docID_count, absurl);
 								add_url(queue_url, absurl);
 								addEdge(graph, findOrCreateNode(graph, htmlInfo->docid), findOrCreateNode(graph, docID_count));
 							}
@@ -232,6 +233,7 @@ void parseText(htmlStruct *htmlInfo, HashTable *table_docID, HashTable *table_wo
 				wordID_count++;
 				ht_insert(table_wordID, wordBuf, wordID_count);
 			}
+			it_insert(table_inverted, ht_search(table_wordID, wordBuf), htmlInfo->docid); 
             page += wordLen;
         }
         else

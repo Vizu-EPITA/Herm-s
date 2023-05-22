@@ -33,7 +33,7 @@ void ft_free_table(ForwardTable* table)
 	free(table);
 }
 
-void ft_insert(ForwardTable* table, uint32_t index, char* url)
+void ft_insert(ForwardTable* table, uint32_t index, const char* url)
 {
 	if(index < table->size)
 	{
