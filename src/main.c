@@ -23,12 +23,12 @@ int main(int argc, char *argv[])
 
 	thr_data->limit = strtoul(argv[1], NULL, 10);
 
-	thr_data->table_docID = create_table(400);
-	thr_data->table_wordID = create_table(1000);
+	thr_data->table_docID = create_table(10000);
+	thr_data->table_wordID = create_table(100000);
 
-	thr_data->ftable_docID = ft_create_table(1000);
+	thr_data->ftable_docID = ft_create_table(10000);
 
-	thr_data->table_inverted = it_create_table(1000);
+	thr_data->table_inverted = it_create_table(10000);
 
 	thr_data->queue_url = init_url_queue();
 	thr_data->queue_file = init_file_queue();

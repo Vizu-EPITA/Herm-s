@@ -48,7 +48,7 @@ void *indexer(void *arg)
 	save_table(thr_data->table_wordID, "./wordidsave");
 	ft_save(thr_data->ftable_docID, "./forwardsave");
 	it_save(thr_data->table_inverted, "./invertedsave");
-	print_table(thr_data->table_docID);
+//	print_table(thr_data->table_docID);
 	//print_table(thr_data->table_wordID);
 	printf("==============================\nTOTAL OF %d UNIQUE LINKS FOUND\n==============================\n", docID_count);
 	pthread_exit(NULL);

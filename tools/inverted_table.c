@@ -55,7 +55,7 @@ void it_insert(InvertedTable* table, uint32_t index, int32_t value)
 		}
 		else
 		{
-			table->items[index]->size = table->items[index]->size * 2;
+			table->items[index]->size = table->items[index]->size * 4;
 			table->items[index]->values = realloc(table->items[index]->values,
 				sizeof(int32_t) * table->items[index]->size);
 
@@ -65,7 +65,7 @@ void it_insert(InvertedTable* table, uint32_t index, int32_t value)
 	else
 	{
 		uint32_t initialSize = table->size;
-		table->size = table->size * 2;
+		table->size = table->size * 4;
 		table->items = realloc(table->items, sizeof(It_item *) * table->size);
 
 		for(uint32_t i = initialSize; i < table->size; i++)

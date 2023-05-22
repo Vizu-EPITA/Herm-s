@@ -45,7 +45,7 @@ void ft_insert(ForwardTable* table, uint32_t index, const char* url)
 	else
 	{
 		uint32_t initialSize = table->size;
-		table->size = table->size * 2;
+		table->size = table->size * 4;
 		table->urls = realloc(table->urls, sizeof(char *) * table->size);
 
 		for(uint32_t i = initialSize; i < table->size; i++)
