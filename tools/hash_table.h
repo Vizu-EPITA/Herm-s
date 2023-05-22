@@ -34,4 +34,8 @@ int32_t ht_search(HashTable* table, const char* key);
 
 void print_table(HashTable* table);
 
+void save_table(HashTable* table, char* path);
+
+HashTable* load_table(char* path);
+
 #endif

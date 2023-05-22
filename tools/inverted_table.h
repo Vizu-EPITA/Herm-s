@@ -29,4 +29,8 @@ void it_insert(InvertedTable* table, uint32_t index, int32_t value);
 
 It_item* it_search(InvertedTable* table, uint32_t index);
 
+void it_save(InvertedTable* table, char* path);
+
+InvertedTable* it_load(char* path);
+
 #endif
