@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
 
 int main()
 {
-
 	Graph *graph = loadGraph("./graphsave.txt");
 	InvertedTable *table_inverted = it_load("./invertedsave");
 	ForwardTable *forward = ft_load("./forwardsave");

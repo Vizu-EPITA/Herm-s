@@ -192,29 +192,31 @@ char **search_query(char *query, ForwardTable *forward, HashTable *table_wordId,
 	}
 
 	//Get the top 10 biggest ranks
-	int32_t *tenRankIndexArray = malloc(sizeof(int32_t)*10);
+	/*int32_t *tenRankIndexArray = malloc(sizeof(int32_t)*10);
 	if (tenRankIndexArray == NULL) errx(1, "Could not allocate tenRankArray");
 	double formerMax = get_ten_rank(tenRankIndexArray, 0, docIdArray, nbAdded, -1, graph);
 	for (int32_t i = 1; i < 10 && i < nbAdded; i++)
 	{
 		formerMax = get_ten_rank(tenRankIndexArray, i, docIdArray, nbAdded, formerMax, graph);
-	}
+	}*/
 
 	//Retrieve the urls
-	char **urlArray = malloc(sizeof(char*)*10);
+	char **urlArray = malloc(sizeof(char*)*nbAdded + 1);
 	if (urlArray == NULL) errx(1, "COuld not allocate the urlArray");
 	int32_t i = 0;
-	while (i < 10)// && i < nbAdded)
+	while (i < nbAdded)// && i < nbAdded)
 	{
-		urlArray[i] = ft_search(forward, docIdArray[tenRankIndexArray[i]]);
+		urlArray[i] = ft_search(forward, docIdArray[i]);
 		i++;
 	}
+	urlArray[i] = 0;
 	//while (i < 10)
 	//{
 	//	urlArray[i] = 0;
 	//	i++;
 	//}
 
-	free(tenRankIndexArray);
+	//free(tenRankIndexArray);
+	findOrCreateNode(graph, 1);
 	return urlArray;
 }

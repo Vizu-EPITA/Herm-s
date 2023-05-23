@@ -31,14 +31,17 @@ void button_clicked(GtkWidget *widget, gpointer data)
     GtkTextIter end_iter;
     gtk_text_buffer_get_end_iter(buffer, &end_iter);
 
-	for (int i = 0; i < 10; i++)
+	//for (int i = 0; i < 10; i++)
+	int i = 0;
+	while (urlsArray[i] != 0)
 	{
 		//printf("%s\n", urlsArray[i]);
-		if (urlsArray[i][0] != 0)
-		{
+		//if (urlsArray[i][0] != 0)
+		//{
     		gtk_text_buffer_insert(buffer, &end_iter, urlsArray[i], -1);
     		gtk_text_buffer_insert(buffer, &end_iter, "\n", -1);
-		}
+		//}
+		i++;
 	}
 	free(urlsArray);
 }
