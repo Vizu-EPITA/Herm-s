@@ -55,7 +55,7 @@ void GtkMain(ForwardTable *forward, HashTable *table_wordId, InvertedTable *tabl
 {
 	gtk_init(0, NULL);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), "Text Entry Example");
+    gtk_window_set_title(GTK_WINDOW(window), "Hermes Search Engine");
     gtk_window_set_default_size(GTK_WINDOW(window), 300, 200);
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
@@ -78,7 +78,7 @@ void GtkMain(ForwardTable *forward, HashTable *table_wordId, InvertedTable *tabl
     buttonData.entry = entry;
 
     // Button
-    GtkWidget *button = gtk_button_new_with_label("Save");
+    GtkWidget *button = gtk_button_new_with_label("Search !");
     g_signal_connect(button, "clicked", G_CALLBACK(button_clicked), &buttonData);
     gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, FALSE, 0);
 

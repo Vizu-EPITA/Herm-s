@@ -8,6 +8,7 @@
 #include "../tools/graph.h"
 #include <pthread.h>
 #include <err.h>
+
 /*
 int main(int argc, char *argv[])
 {
@@ -43,9 +44,7 @@ int main(int argc, char *argv[])
 
 	pthread_exit(NULL);
 }
-
 */
-
 int main()
 {
 	Graph *graph = loadGraph("./graphsave.txt");
