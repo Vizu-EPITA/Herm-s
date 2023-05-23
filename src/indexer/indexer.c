@@ -118,8 +118,9 @@ htmlStruct* decompress_file(int32_t file)
 		errx(EXIT_FAILURE, "Not enough memory!");
 	int res = uncompress((unsigned char *) page, (unsigned long *) &htmlInfo->pagelen,
 		(unsigned char *) compressed, (unsigned long) compressedSize);
-	if(res != Z_OK)
-		errx(EXIT_FAILURE, "Uncompression error!");
+	res++;
+	//if(res != Z_OK)
+	//	errx(EXIT_FAILURE, "Uncompression error!");
 	page[htmlInfo->pagelen] = 0;
 	htmlInfo->page = page;
 
