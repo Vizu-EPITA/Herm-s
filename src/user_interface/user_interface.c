@@ -28,7 +28,9 @@ void button_clicked(GtkWidget *widget, gpointer data)
     GtkWidget *text_view = (GtkWidget *)g_object_get_data(G_OBJECT(widget), "text_view");
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
 
-    GtkTextIter end_iter;
+	gtk_text_buffer_set_text(buffer, "", -1);
+
+	GtkTextIter end_iter;
     gtk_text_buffer_get_end_iter(buffer, &end_iter);
 
 	//for (int i = 0; i < 10; i++)
