@@ -171,6 +171,7 @@ size_t parseLink(char *page, char *linkBuf)
         page++;
         len++;
     }
+	*linkBuf = 0;
     return len;
 }
 
@@ -243,8 +244,7 @@ void parseText(htmlStruct *htmlInfo, HashTable *table_docID, HashTable *table_wo
 			{
                  char* wordTEST = malloc(sizeof(char) * wordLen + 1);
                  strncpy(wordTEST, wordBuf, wordLen);
-                 wordTEST[wordLen] = 0;
-
+				 wordTEST[wordLen] = 0;
                  if(ht_search(table_wordID, wordTEST) == -1)
                  {
                      wordID_count++;

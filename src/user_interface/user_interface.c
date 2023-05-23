@@ -33,8 +33,12 @@ void button_clicked(GtkWidget *widget, gpointer data)
 
 	for (int i = 0; i < 10; i++)
 	{
-    	gtk_text_buffer_insert(buffer, &end_iter, urlsArray[i], -1);
-    	gtk_text_buffer_insert(buffer, &end_iter, "\n", -1);
+		//printf("%s\n", urlsArray[i]);
+		if (urlsArray[i][0] != 0)
+		{
+    		gtk_text_buffer_insert(buffer, &end_iter, urlsArray[i], -1);
+    		gtk_text_buffer_insert(buffer, &end_iter, "\n", -1);
+		}
 	}
 	free(urlsArray);
 }

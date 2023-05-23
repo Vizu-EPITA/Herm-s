@@ -153,7 +153,7 @@ char **search_query(char *query, ForwardTable *forward, HashTable *table_wordId,
 	It_item *firstStruct = structInvertedArray[0];
 	int32_t fullSize = firstStruct->size;
 	int32_t *docIdFullArray = firstStruct->values;
-	int32_t nbAdded;
+	int32_t nbAdded = 0;
 	int32_t docIdArray[fullSize];
 	int32_t docId;
 	int found = 0;
@@ -204,16 +204,16 @@ char **search_query(char *query, ForwardTable *forward, HashTable *table_wordId,
 	char **urlArray = malloc(sizeof(char*)*10);
 	if (urlArray == NULL) errx(1, "COuld not allocate the urlArray");
 	int32_t i = 0;
-	while (i < 10 && i < nbAdded)
+	while (i < 10)// && i < nbAdded)
 	{
 		urlArray[i] = ft_search(forward, docIdArray[tenRankIndexArray[i]]);
 		i++;
 	}
-	while (i < 10)
-	{
-		urlArray[i] = 0;
-		i++;
-	}
+	//while (i < 10)
+	//{
+	//	urlArray[i] = 0;
+	//	i++;
+	//}
 
 	free(tenRankIndexArray);
 	return urlArray;
