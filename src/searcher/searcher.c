@@ -217,6 +217,30 @@ char **search_query(char *query, ForwardTable *forward, HashTable *table_wordId,
 	//}
 
 	//free(tenRankIndexArray);
+
+	int32_t fadded = 0;
+	int isIn = 0;
+	char **fArray = malloc(sizeof(char*)*nbAdded + 1);
+	for (int i = 1; i < nbAdded; i++)
+	{
+		isIn = 0;
+		for (int j = 0; j < fadded; j++)
+		{
+			if (strcmp(urlArray[i], fArray[j]) == 0)
+			{
+				isIn = 1;
+				break;
+			}
+		}
+		if (isIn == 0)
+		{
+			printf("%s\n", urlArray[i]);
+			fArray[fadded] = urlArray[i];
+			fadded ++;
+		}
+	}
+
 	findOrCreateNode(graph, 1);
-	return urlArray;
+	fArray[fadded] = 0;
+	return fArray;
 }
