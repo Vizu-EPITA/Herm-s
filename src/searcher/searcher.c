@@ -223,6 +223,8 @@ char **search_query(char *query, ForwardTable *forward, HashTable *table_wordId,
 	char **fArray = malloc(sizeof(char*)*nbAdded + 1);
 	for (int i = 1; i < nbAdded; i++)
 	{
+		if (urlArray[i] != 0)
+		{
 		isIn = 0;
 		for (int j = 0; j < fadded; j++)
 		{
@@ -238,9 +240,15 @@ char **search_query(char *query, ForwardTable *forward, HashTable *table_wordId,
 			fArray[fadded] = urlArray[i];
 			fadded ++;
 		}
+		}
 	}
 
 	findOrCreateNode(graph, 1);
 	fArray[fadded] = 0;
+	if (fadded == 0)
+	{
+		free(fArray);
+		return NULL;
+	}
 	return fArray;
 }

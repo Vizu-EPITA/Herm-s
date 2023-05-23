@@ -1,4 +1,4 @@
 
 clean:
-	rm -rf main
+	rm main
 
